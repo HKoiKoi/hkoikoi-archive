@@ -45,5 +45,6 @@
         ]
       }
     ]
-  }
+  },
+  "enabledMcpjsonServers": ["sequential-thinking", "shrimp-task-manager"]
 }
