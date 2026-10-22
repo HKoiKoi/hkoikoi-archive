@@ -21,7 +21,7 @@ description: |
   </commentary>
   </example>
 model: opus
-color: red
+color: orange
 tools: Read, Glob, Grep, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---
 
@@ -58,7 +58,7 @@ PRD에서 프로젝트 유형, 기술 스택, 외부 서비스/API 의존성, �
 
 ### Step 2. 프로젝트 스택 대조
 
-`package.json`, `CLAUDE.md`, `AGENTS.md`를 Read로 확인해 PRD의 기술 스택·버전과 대조합니다.
+`package.json`, `AGENTS.md`, `docs/guides/project-structure.md`(스택·버전 표)를 Read로 확인해 PRD의 기술 스택·버전과 대조합니다. 이 프로젝트에는 `CLAUDE.md`가 없습니다.
 
 - 버전 불일치(예: PRD는 Next.js 15, 실제는 16)나 존재하지 않는 스택 가정을 지적합니다.
 - `AGENTS.md`가 Next.js의 breaking change를 경고하므로, Next.js 관련 주장은 `node_modules/next/dist/docs/`를 우선 근거로 확인합니다.

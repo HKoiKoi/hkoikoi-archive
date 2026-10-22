@@ -21,6 +21,7 @@ description: |
   </commentary>
   </example>
 model: sonnet
+color: blue
 tools: Read, Glob, Grep, Write, mcp__context7__resolve-library-id, mcp__context7__query-docs
 ---
 
@@ -57,7 +58,7 @@ tools: Read, Glob, Grep, Write, mcp__context7__resolve-library-id, mcp__context7
 ## 📥 입력 처리
 
 - 대화형 질문은 할 수 없으므로, 입력이 모호하면 **합리적 가정을 세우고** PRD 하단 `가정 사항`에 명시합니다.
-- 작성 전 `package.json`, `CLAUDE.md`를 Read로 확인해 기존 프로젝트 스택(스타터킷)이 있는지 파악합니다. 있으면 그 스택을 기본값으로 따릅니다.
+- 작성 전 `package.json`, `AGENTS.md`, `docs/guides/project-structure.md`를 Read로 확인해 기존 프로젝트 스택(스타터킷)이 있는지 파악합니다. 있으면 그 스택을 기본값으로 따릅니다.
 - `docs/PRD.md`가 이미 존재하면 덮어쓰기 전에 Read로 내용을 확인하고, 사용자 요청이 "수정"이면 기존 ID 체계(F001…)를 유지합니다.
 
 ## ✅ 반드시 생성할 것
@@ -103,7 +104,7 @@ tools: Read, Glob, Grep, Write, mcp__context7__resolve-library-id, mcp__context7
 
 ### 7. 기술 스택
 
-- 1순위: 프로젝트의 `package.json`/`CLAUDE.md`에 있는 스택과 **버전 그대로** 사용
+- 1순위: 프로젝트의 `package.json`/`docs/guides/project-structure.md`에 있는 스택과 **버전 그대로** 사용
 - 새로 필요한 기술(백엔드, DB, 외부 API 등)은 **필요한 경우에만** 추가하고, 선택 이유를 1줄로 기록
 - 버전이 불확실하면 context7로 확인하고, 확인하지 못하면 버전을 쓰지 말고 "버전 확인 필요"로 표기 (추측 금지)
 - 학습 곡선이 낮고 문서화가 잘 된 기술 우선
@@ -225,7 +226,7 @@ tools: Read, Glob, Grep, Write, mcp__context7__resolve-library-id, mcp__context7
 
 ## 🔄 처리 프로세스
 
-1. 입력 분석 및 가정 정리, 프로젝트 스택 확인 (`package.json`, `CLAUDE.md`)
+1. 입력 분석 및 가정 정리, 프로젝트 스택 확인 (`package.json`, `AGENTS.md`, `docs/guides/`)
 2. 사용자 여정 설계 (페이지 이름만 사용)
 3. MVP 기능 추출 및 ID 부여, 구현 페이지 매핑
 4. 메뉴 구조 설계 (기능 ID 연결)
