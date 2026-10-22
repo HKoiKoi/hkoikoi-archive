@@ -1,6 +1,6 @@
 # 프로젝트 구조 가이드
 
-이 문서는 `hkoikoi-archive`의 실제 폴더 구조와 네이밍 컨벤션을 정의합니다.
+이 문서는 `hkoikoi-dev`의 실제 폴더 구조와 네이밍 컨벤션을 정의합니다.
 이 프로젝트는 `src/` 디렉터리를 쓰지 않고 루트에 `app/`, `components/`, `lib/`를 둡니다.
 
 ## 현재 스택
@@ -19,7 +19,7 @@
 ## 전체 구조
 
 ```
-hkoikoi-archive/
+hkoikoi-dev/
 ├── app/                    # Next.js App Router
 ├── components/
 │   ├── layout/             # 사이트 헤더·푸터, nav-link(client)
