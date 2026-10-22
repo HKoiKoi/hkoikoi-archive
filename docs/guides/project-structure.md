@@ -24,8 +24,8 @@ hkoikoi-archive/
 ├── components/
 │   └── ui/                 # shadcn/ui 컴포넌트 (현재 button)
 ├── lib/
+│   ├── site-config.ts      # 릴리스 플래그(features), 내비게이션, resumeUrl
 │   └── utils.ts            # cn() 재export
-├── public/                 # 정적 에셋 (create-next-app 기본 svg)
 ├── docs/guides/            # 개발 가이드
 ├── .agents/skills/         # 에이전트 스킬 (shadcn, migrate-radix-to-base)
 ├── .claude/                # Claude Code 에이전트·스킬·훅 설정
@@ -48,10 +48,21 @@ hkoikoi-archive/
 
 ```
 app/
-├── layout.tsx      # 루트 레이아웃 (Geist/Geist Mono 폰트, globals.css)
-├── page.tsx        # / (현재 create-next-app 기본 화면)
-├── globals.css     # Tailwind v4 + shadcn 테마 변수
-└── favicon.ico
+├── layout.tsx          # 루트 레이아웃 (lang="ko", 메타데이터 템플릿, Geist 폰트)
+├── not-found.tsx       # 매칭되지 않는 URL(/foo)과 관리자 notFound() 처리
+├── globals.css         # Tailwind v4 + shadcn 테마 변수
+├── favicon.ico
+├── (site)/             # 공개 사이트 라우트 그룹
+│   ├── not-found.tsx   # 그룹 안에서 notFound()가 던져질 때
+│   ├── page.tsx        # /
+│   ├── about/          # /about
+│   ├── projects/       # /projects, /projects/[slug]
+│   ├── credentials/    # /credentials
+│   ├── blog/           # /blog, /blog/[slug] (layout.tsx가 features.blog 가드)
+│   └── contact/        # /contact
+└── admin/              # layout.tsx가 features.admin 가드
+    ├── login/          # /admin/login
+    └── (protected)/    # /admin, posts/new, posts/[id], projects/new, projects/[id]
 ```
 
 파일 규칙:

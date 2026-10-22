@@ -97,7 +97,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
 
 ### Phase 1: 애플리케이션 골격 구축
 
-- **Task 001: 스타터 정리 및 전체 라우트 구조 생성** - 우선순위
+- **Task 001: 스타터 정리 및 전체 라우트 구조 생성** ✅ - 우선순위
   - 관련 기능: F015(구조), 전 페이지 / 관련 파일: `app/**`, `lib/site-config.ts`, `public/`
   - create-next-app 기본 화면(`app/page.tsx`)과 `public/*.svg` 제거, 루트 레이아웃 `lang="ko"` 및 사이트 메타데이터(제목 템플릿 `%s | HKoiKoi.dev`, 설명) 설정
   - 공개 라우트 그룹 `app/(site)/` 아래 빈 페이지 생성: `/`, `/about`, `/projects`, `/projects/[slug]`, `/credentials`(자격·어학·논문), `/blog`, `/blog/[slug]`, `/contact`
@@ -106,11 +106,16 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 릴리스 플래그 `lib/site-config.ts` 작성: `features.blog`, `features.admin`(1차 false), 내비게이션 메뉴 정의, 이력서 경로(`resumeUrl`) 설정. 플래그가 꺼지면 블로그·관리자 라우트는 `notFound()` 처리
   - **수락 기준**: 모든 경로가 404 없이 제목만 있는 빈 페이지로 열리고, 플래그를 끄면 블로그·관리자 경로는 404를 반환한다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → `/`, `/about`, `/projects`, `/projects/sample`, `/credentials`, `/contact` 접속 → 각 페이지 제목 표시
-    - [ ] 오류: 수동 확인 → 존재하지 않는 `/foo` 접속 → 공개 그룹 `not-found` 화면 표시
-    - [ ] 엣지: 수동 확인 → `features.blog=false` 상태에서 `/blog`, `/admin/login` 접속 → 404 표시
-    - [ ] 정상: 명령 → `npm run check && npm run build` → 통과, 빌드 출력에 모든 라우트 표시
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → `/`, `/about`, `/projects`, `/projects/sample`, `/credentials`, `/contact` 접속 → 각 페이지 제목 표시
+    - [x] 오류: 수동 확인 → 존재하지 않는 `/foo` 접속 → 루트 `app/not-found.tsx` 화면 표시(404). 공개 그룹 `(site)/not-found.tsx`는 그룹 안에서 `notFound()`가 던져질 때 쓰임
+    - [x] 엣지: 수동 확인 → `features.blog=false` 상태에서 `/blog`, `/admin/login` 접속 → 404 표시
+    - [x] 정상: 명령 → `npm run check && npm run build` → 통과, 빌드 출력에 모든 라우트 표시
+  - **테스트 결과**: 통과 (2026-10-22)
+    - `npm run check && npm run build` 통과, 빌드 출력에 공개 8개·관리자 7개 라우트 표시
+    - 공개 6개 경로 200 + 제목 확인, `/foo` 404, 플래그 off에서 `/blog`, `/blog/x`, `/admin/*` 전부 404
+    - 플래그를 임시로 true로 바꿔 재빌드하면 블로그·관리자 경로가 모두 200으로 열림 확인 후 false로 원복
+    - 플래그 가드는 `app/(site)/blog/layout.tsx`, `app/admin/layout.tsx` 두 곳에서 처리(정적 플래그라 세션 검사와 달리 부분 렌더링 문제 없음)
+    - `[slug]`/`[id]` 페이지는 cacheComponents 빌드 오류 때문에 `params` await를 `<Suspense>` 안에서 수행
 
 - **Task 002: 도메인 타입 및 데이터베이스 스키마 설계**
   - 관련 기능: F001~F014 데이터 / 관련 파일: `lib/types/`, `lib/db/schema.ts`, `lib/schemas/`
