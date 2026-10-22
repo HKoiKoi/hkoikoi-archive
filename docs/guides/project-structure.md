@@ -1,66 +1,66 @@
 # 프로젝트 구조 가이드
 
-이 문서는 Next.js 16 + Supabase 프로젝트의 실제 폴더 구조와 네이밍 컨벤션을 정의합니다.
+이 문서는 `hkoikoi-archive`의 실제 폴더 구조와 네이밍 컨벤션을 정의합니다.
 이 프로젝트는 `src/` 디렉터리를 쓰지 않고 루트에 `app/`, `components/`, `lib/`를 둡니다.
+
+## 현재 스택
+
+| 항목        | 버전 / 설정                                                         |
+| ----------- | ------------------------------------------------------------------- |
+| Next.js     | 16.4.2 (App Router, Turbopack, `cacheComponents` + `partialPrefetching`) |
+| React       | 19.3                                                                |
+| Tailwind    | 4.3 (`@tailwindcss/turbopack` 로더, PostCSS 설정 없음)              |
+| shadcn/ui   | `base-nova` 스타일, **Base UI**(`@base-ui/react`) 기반              |
+| 유틸리티    | `cn` 패키지, `class-variance-authority`, `lucide-react`, `tw-animate-css` |
+| 도구        | ESLint 9 flat config (`eslint-config-next`), TypeScript 5           |
+
+아직 없는 것(필요할 때 추가): 데이터베이스/인증, 폼 라이브러리, 테마 전환(`next-themes`), Prettier, Git hooks, `proxy.ts`, 테스트.
 
 ## 전체 구조
 
 ```
-hkoikoi-sco-patrol/
+hkoikoi-archive/
 ├── app/                    # Next.js App Router
-├── components/             # React 컴포넌트
-├── lib/                    # 유틸리티, Supabase 클라이언트
-├── supabase/
-│   └── migrations/         # SQL 마이그레이션 (타임스탬프_설명.sql)
+├── components/
+│   └── ui/                 # shadcn/ui 컴포넌트 (현재 button)
+├── lib/
+│   └── utils.ts            # cn() 재export
+├── public/                 # 정적 에셋 (create-next-app 기본 svg)
 ├── docs/guides/            # 개발 가이드
-├── proxy.ts                # 요청 전처리 (Supabase 세션 갱신)
-├── next.config.ts          # Next.js 설정 (cacheComponents)
-├── postcss.config.mjs      # Tailwind CSS v4 (@tailwindcss/postcss)
-├── eslint.config.mjs       # ESLint flat config (eslint-config-prettier 포함)
-├── .prettierrc.json        # Prettier (Tailwind 클래스 정렬 플러그인)
-├── .husky/                 # Git hooks (pre-commit: lint-staged, pre-push: typecheck)
+├── .agents/skills/         # 에이전트 스킬 (shadcn, migrate-radix-to-base)
+├── .claude/                # Claude Code 에이전트·스킬·훅 설정
+├── .mcp.json               # MCP 서버 (sequential-thinking, shrimp-task-manager)
+├── next.config.ts          # Next.js 설정
 ├── components.json         # shadcn/ui 설정
+├── eslint.config.mjs       # ESLint flat config
 ├── tsconfig.json           # TypeScript 설정 (@/* → ./*)
-├── AGENTS.md / CLAUDE.md   # 에이전트 지침 (Next.js 번들 문서 안내 포함)
-└── .env / .env.example     # 환경 변수
+├── skills-lock.json        # 설치된 스킬 버전 고정
+├── AGENTS.md               # 에이전트 지침 (Next.js 번들 문서 안내)
+└── .env / .env.sample      # 환경 변수 (shrimp-task-manager용)
 ```
 
-- `tailwind.config.ts`는 없습니다. 테마는 `app/globals.css`의 `@theme`에서 정의합니다.
-- `middleware.ts`는 없습니다. 같은 역할은 `proxy.ts`가 합니다.
-- `public/`, `hooks/`, `src/`는 현재 없으며 필요할 때 루트에 추가합니다.
+- `tailwind.config.ts`, `postcss.config.*`는 없습니다. Tailwind는 `next.config.ts`의 `turbopack.rules`에서 `@tailwindcss/turbopack` 로더로 연결되고, 테마는 `app/globals.css`의 `@theme inline`에서 정의합니다.
+- `middleware.ts`는 만들지 않습니다. 요청 전처리가 필요하면 루트에 `proxy.ts`를 추가합니다.
+- `.env`와 `shrimp_data/`는 `.gitignore` 대상입니다. 환경 변수 목록은 `.env.sample`에 유지합니다.
+- `AGENTS.md`의 `next dev`가 관리하는 블록은 직접 지우지 말고 변경분을 함께 커밋합니다.
 
 ## app/ — 라우트
 
 ```
 app/
-├── layout.tsx                # 루트 레이아웃 (폰트, ThemeProvider, 헤더/푸터, 공통 안내 배너)
-├── page.tsx                  # / (일지 조회로 이동)
-├── globals.css               # Tailwind v4 + 테마 변수
-├── icon.svg
-├── error.tsx                 # 전역 오류 경계 (한국어, retry)
-├── global-error.tsx          # 루트 레이아웃 오류 경계 (자체 html/body)
-├── not-found.tsx             # 전역 404 (한국어)
-├── auth/                     # 인증 흐름
-│   ├── login/, sign-up/, sign-up-success/
-│   ├── forgot-password/, update-password/, error/
-│   ├── callback/route.ts     # OAuth 콜백 Route Handler
-│   └── confirm/route.ts      # 이메일 확인 Route Handler
-├── logs/                     # 일지 조회 (공개, 앱 기본 진입)
-│   ├── page.tsx, actions.ts, error.tsx
-│   └── _components/
-└── protected/                # 로그인 필요 영역 (역할 검증은 lib/auth/dal.ts)
-    ├── layout.tsx, page.tsx
-    ├── patrol/               # 순찰 기록 (매니저·관리자)
-    └── admin/tags/           # 퀵 태그 관리 (관리자)
+├── layout.tsx      # 루트 레이아웃 (Geist/Geist Mono 폰트, globals.css)
+├── page.tsx        # / (현재 create-next-app 기본 화면)
+├── globals.css     # Tailwind v4 + shadcn 테마 변수
+└── favicon.ico
 ```
 
 파일 규칙:
 
 - `page.tsx` 라우트의 UI, `layout.tsx` 공유 레이아웃, `route.ts` Route Handler
 - `loading.tsx`, `error.tsx`, `not-found.tsx`는 필요할 때만 추가
-- `params`, `searchParams`는 Promise이므로 `await` 하거나 `PageProps<'/경로'>` 헬퍼를 사용 (`npx next typegen`)
-- Cache Components가 켜져 있으므로 요청 시점 데이터(`cookies()`, DB 조회 등)를 읽는 컴포넌트는 `<Suspense>`로 감싼다
-- 라우트 세그먼트 설정 `dynamic`, `revalidate`, `fetchCache`, `runtime = 'edge'`는 사용하지 않는다 (자세한 내용은 `nextjs-16.md`)
+- `params`, `searchParams`는 Promise이므로 `await` 하거나 `PageProps<'/경로'>` / `LayoutProps<'/경로'>` 헬퍼를 사용 (`app/layout.tsx`가 `LayoutProps<"/">`를 사용 중, 타입은 `npx next typegen`으로 생성)
+- Cache Components가 켜져 있으므로 요청 시점 데이터를 읽는 컴포넌트는 `<Suspense>`로 감싼다 (자세한 내용은 `nextjs-16.md`)
+- 라우트 세그먼트 설정 `dynamic`, `revalidate`, `fetchCache`, `runtime`은 사용하지 않는다
 - 특정 라우트에서만 쓰는 컴포넌트는 해당 라우트 폴더에 둘 수 있다. 앞에 `_`를 붙인 폴더(`_components`)는 라우팅에서 제외된다
 - URL에 영향을 주지 않고 레이아웃만 나누려면 Route Group `(group)`을 사용한다
 
@@ -68,49 +68,27 @@ app/
 
 ```
 components/
-├── ui/                       # shadcn/ui 기본 컴포넌트 (alert-dialog, badge, button, card,
-│                             #   checkbox, dialog, dropdown-menu, input, label, separator,
-│                             #   skeleton, sonner, switch, textarea)
-├── layout/                   # 앱 공통 레이아웃 (app-chrome, app-header, app-footer,
-│                             #   nav-menu, notice-banner, pending-banner)
-├── patrol/                   # 여러 페이지 공용 순찰 컴포넌트 (copy-button, seat-chips)
-├── auth-button.tsx, logout-button.tsx, google-login-button.tsx
-├── login-form.tsx, sign-up-form.tsx
-├── forgot-password-form.tsx, update-password-form.tsx
-├── auth-error-message.tsx, in-app-browser-notice.tsx
-└── theme-switcher.tsx
+├── ui/             # shadcn/ui 컴포넌트 (CLI로 추가, 현재 button)
+└── <domain>/       # 여러 페이지가 공유하는 도메인 컴포넌트 (필요할 때 생성)
 ```
 
 분류 규칙:
 
-1. **ui/**: shadcn/ui 기반 순수 UI 컴포넌트. 비즈니스 로직 없이 props로 동작을 제어한다. 추가는 `npx shadcn@latest add <name>`.
-2. **`components/<domain>/`**: 여러 페이지가 쓰는 도메인 컴포넌트(`layout/`, `patrol/`). 한 페이지에서만 쓰면 라우트의 `_components/`에 둔다.
-3. **루트(`components/*.tsx`)**: 인증 폼·버튼 같은 기능 컴포넌트. 기능이 늘어 5개 이상 묶이면 `components/<domain>/` 폴더로 분리한다.
-4. import 방향은 `components/ui` ← `components/<domain>` ← `app/` 단방향이다.
+1. **`ui/`**: shadcn/ui 기반 순수 UI 컴포넌트. 비즈니스 로직 없이 props로 동작을 제어한다. 추가는 `npx shadcn@latest add <name>`.
+2. **`components/<domain>/`**: 여러 페이지가 쓰는 도메인 컴포넌트(예: `components/layout/`). 한 페이지에서만 쓰면 라우트의 `_components/`에 둔다.
+3. import 방향은 `components/ui` ← `components/<domain>` ← `app/` 단방향이다.
 
-## lib/ — 유틸리티와 Supabase
+## lib/ — 유틸리티
 
 ```
 lib/
-├── utils.ts                  # cn()
-├── auth/                     # dal.ts(requireStaff/requireAdmin), notice.ts, safe-next.ts
-├── queries/                  # 서버 조회 함수 (patrol-logs, patrol-draft, quick-tags)
-├── types/                    # auth.ts, patrol.ts (화면용 도메인 타입)
-├── business-date.ts          # 영업일 표시·기본값 (기준은 DB private.business_date_of)
-├── patrol-format.ts          # 복사 문구 순수 함수
-├── patrol-form-reducer.ts, patrol-draft-rpc.ts, draft-backup.ts   # 순찰 입력·자동 저장
-├── permissions.ts, seat-numbers.ts, quick-tag-label.ts, quick-tag-list.ts
-└── supabase/
-    ├── client.ts             # 브라우저용 클라이언트 (Client Component)
-    ├── server.ts             # 서버용 클라이언트 (Server Component/Action/Route Handler)
-    ├── proxy.ts              # proxy.ts에서 호출하는 세션 갱신 로직
-    ├── database.types.ts     # 생성된 DB 타입
-    └── mappers.ts            # DB 행 → 도메인 타입 변환
+└── utils.ts        # export { cn } from "cn"
 ```
 
-- 서버 클라이언트(`server.ts`)는 `cookies()`를 쓰므로 **요청마다** `await createClient()`로 생성한다. 전역 변수에 저장하지 않는다.
-- 클라이언트 컴포넌트에서는 `client.ts`만 import한다. `server.ts`와 `proxy.ts`는 서버 전용이다.
-- 스키마, 타입, 훅이 생기면 `lib/schemas/`, `lib/types/`, `hooks/`(루트)를 추가한다.
+- `cn()`은 `cn` 패키지(shadcn-ui/cn: clsx + tailwind-merge 대체)를 `lib/utils.ts`에서 재export 합니다. **직접 작성하는 코드는 항상 `import { cn } from "@/lib/utils"`를 사용**하고, `from "cn"`을 직접 import하지 않습니다. 구현을 교체할 때 `lib/utils.ts` 한 곳만 고치기 위함입니다.
+- 예외: `shadcn add`나 `migrate-radix-to-base`가 생성한 `components/ui/*`는 `from "cn"`을 쓰며, 재생성 시 다시 덮어쓰이므로 일부러 바꾸지 않습니다.
+- 스키마, 타입, 훅, 데이터 접근 코드가 생기면 `lib/schemas/`, `lib/types/`, `lib/queries/`, 루트 `hooks/`를 추가합니다 (`components.json`의 `hooks` 별칭은 `@/hooks`).
+- 서버 전용 모듈은 상단에 `import "server-only"`를 두어 클라이언트 번들 유입을 막는다.
 
 ## 파일/폴더 네이밍
 
@@ -129,7 +107,7 @@ signUpSuccess/        # X
 
 ## 경로 별칭
 
-`tsconfig.json`의 `"@/*": ["./*"]`, `components.json`의 aliases를 따릅니다. 루트 기준이므로 `src`가 붙지 않습니다.
+`tsconfig.json`의 `"@/*": ["./*"]`와 `components.json`의 aliases를 따릅니다. 루트 기준이므로 `src`가 붙지 않습니다.
 
 | 별칭              | 실제 경로                |
 | ----------------- | ------------------------ |
@@ -142,7 +120,6 @@ signUpSuccess/        # X
 ```tsx
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/server";
 ```
 
 같은 폴더 안의 파일 외에는 상대 경로(`../../`) 대신 별칭을 사용합니다.
@@ -152,15 +129,13 @@ import { createClient } from "@/lib/supabase/server";
 | 대상                      | 위치                                                    |
 | ------------------------- | ------------------------------------------------------- |
 | 새 페이지                 | `app/<경로>/page.tsx` (동적: `app/users/[id]/page.tsx`) |
-| 인증이 필요한 페이지      | `app/protected/` 아래                                   |
 | Route Handler             | `app/<경로>/route.ts`                                   |
 | Server Action             | 기능 옆 `actions.ts` (파일 최상단에 `"use server"`)     |
 | 공통 UI                   | `components/ui/` (shadcn CLI)                           |
 | 한 페이지 전용 컴포넌트   | 해당 라우트 폴더의 `_components/`                       |
-| 여러 페이지 공용 컴포넌트 | `components/`                                           |
-| DB 스키마 변경            | `supabase/migrations/<timestamp>_<설명>.sql`            |
-
-DB 변경은 마이그레이션으로만 합니다. 새 테이블에는 RLS를 켜고 필요한 권한만 grant 합니다 (`profiles` 마이그레이션 참고).
+| 여러 페이지 공용 컴포넌트 | `components/<domain>/`                                  |
+| 정적 파일                 | `public/`                                               |
+| 환경 변수                 | `.env` + `.env.sample`에 키 이름 추가                   |
 
 ## 코드 조직 원칙
 
@@ -194,6 +169,6 @@ import { helper } from "./helper";
 - [ ] 기능에 맞는 위치(`app/`, `components/`, `lib/`)에 배치
 - [ ] kebab-case 파일명, PascalCase 컴포넌트명
 - [ ] `@/` 별칭 사용, `src/` 경로 쓰지 않기
-- [ ] 서버 전용 모듈(`lib/supabase/server.ts`)을 Client Component에서 import하지 않기
+- [ ] `cn`은 `@/lib/utils`에서 import (`components/ui/*` 생성 코드는 예외)
 - [ ] 요청 시점 데이터를 읽는 컴포넌트에 `Suspense` 경계 설정
-- [ ] DB 변경은 마이그레이션 파일로 추가
+- [ ] `npm run lint`, `npx tsc --noEmit` 통과

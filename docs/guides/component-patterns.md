@@ -1,7 +1,7 @@
 # 컴포넌트 패턴 가이드
 
-이 문서는 Next.js 16 + React 19.3 환경에서 재사용 가능한 컴포넌트를 작성하는 패턴을 정리합니다.
-서버/클라이언트 경계와 캐싱 규칙은 `nextjs-16.md`, 스타일은 `styling-guide.md`를 함께 참고하세요.
+이 문서는 Next.js 16 + React 19.3 + shadcn/ui(Base UI) 환경에서 재사용 가능한 컴포넌트를 작성하는 패턴을 정리합니다.
+서버/클라이언트 경계와 캐싱 규칙은 `nextjs-16.md`, 스타일은 `styling-guide.md`, 폼은 `forms-react-hook-form.md`를 함께 참고하세요.
 
 ## 기본 설계 원칙
 
@@ -10,6 +10,8 @@
 한 컴포넌트는 하나의 명확한 역할만 맡습니다. 아바타 + 상태 + 통계 + 액션이 한 곳에 섞이면 분리합니다.
 
 ```tsx
+import { cn } from "@/lib/utils";
+
 export function UserStatus({ isOnline }: { isOnline: boolean }) {
   return (
     <span
@@ -26,7 +28,7 @@ export function UserStatus({ isOnline }: { isOnline: boolean }) {
 
 ### 컴포지션 우선
 
-상속 대신 `children`과 슬롯 컴포넌트로 조합합니다. `components/ui/card.tsx`가 기준 예시입니다.
+상속 대신 `children`과 슬롯 컴포넌트로 조합합니다. shadcn의 `Card`, `Dialog` 같은 컴파운드 구조가 기준입니다 (`npx shadcn@latest add card`).
 
 ```tsx
 <Card>
@@ -42,22 +44,20 @@ export function UserStatus({ isOnline }: { isOnline: boolean }) {
 
 ### 기본은 Server Component
 
-데이터 패칭, 서버 전용 모듈(Supabase 서버 클라이언트), SEO가 필요한 UI는 Server Component로 둡니다.
+데이터 패칭, 서버 전용 모듈, SEO가 필요한 UI는 Server Component로 둡니다.
 `cacheComponents`가 켜져 있으므로 **요청 시점 데이터를 읽는 컴포넌트는 `<Suspense>`로 감싸고, 데이터를 읽는 쪽을 Suspense 안쪽 컴포넌트로 분리**합니다.
 
 ```tsx
-// app/logs/page.tsx (예시: 계획된 patrol_logs 테이블 기준)
+// app/posts/page.tsx
 import { Suspense } from "react";
-import { createClient } from "@/lib/supabase/server";
 
-async function LogList() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.from("patrol_logs").select();
-  if (error) return <p>불러오지 못했습니다: {error.message}</p>;
+async function PostList() {
+  const res = await fetch("https://example.com/api/posts"); // 캐시하지 않으면 요청 시점 데이터
+  const posts: { id: string; title: string }[] = await res.json();
   return (
     <ul className="grid gap-2">
-      {data.map((item) => (
-        <li key={item.id}>{item.memo}</li>
+      {posts.map((post) => (
+        <li key={post.id}>{post.title}</li>
       ))}
     </ul>
   );
@@ -66,7 +66,7 @@ async function LogList() {
 export default function Page() {
   return (
     <Suspense fallback={<ListSkeleton />}>
-      <LogList />
+      <PostList />
     </Suspense>
   );
 }
@@ -99,9 +99,9 @@ export function LikeButton({ initialLiked }: { initialLiked: boolean }) {
 }
 ```
 
-- Client Component에서 `lib/supabase/server.ts`를 import하지 않는다 (브라우저에서는 `lib/supabase/client.ts`).
-- 서버 전용 코드가 클라이언트로 새는 것이 걱정되면 해당 모듈 상단에 `import "server-only"`를 둔다.
+- Client Component에서 서버 전용 모듈을 import하지 않는다. 서버 전용 코드가 클라이언트로 새는 것이 걱정되면 해당 모듈 상단에 `import "server-only"`를 둔다.
 - `'use client'` 컴포넌트가 import하는 모듈은 모두 클라이언트 번들에 포함된다. 서버 컴포넌트는 `children`/props로 끼워 넣을 수 있다.
+- shadcn 컴포넌트는 대부분 `"use client"` 없이도 쓸 수 있지만, 상태를 쓰는 Base UI 기반 컴포넌트(`dialog`, `select` 등)는 생성된 파일에 이미 지시어가 들어 있다. 직접 지시어를 추가하거나 제거하지 않는다.
 
 ### 동적 라우트 컴포넌트의 params
 
@@ -126,6 +126,8 @@ export default async function Page(props: PageProps<"/products/[id]">) {
 "use client";
 
 import { useActionState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { updateName } from "./actions";
 
 export function NameForm() {
@@ -144,7 +146,7 @@ export function NameForm() {
 }
 ```
 
-React Hook Form과 조합하는 방법은 `forms-react-hook-form.md`를 참고하세요.
+`Input`은 `npx shadcn@latest add input`으로 추가합니다. 폼 구성 규칙은 `forms-react-hook-form.md`를 참고하세요.
 
 ### 낙관적 업데이트: `useOptimistic`
 
@@ -152,6 +154,9 @@ React Hook Form과 조합하는 방법은 `forms-react-hook-form.md`를 참고�
 "use client";
 
 import { useOptimistic, useTransition } from "react";
+import { cn } from "@/lib/utils";
+
+type Todo = { id: string; title: string; pending?: boolean };
 
 export function TodoList({
   todos,
@@ -195,7 +200,7 @@ export function TodoList({
 
 ### `ref`는 일반 prop
 
-React 19에서는 함수 컴포넌트가 `ref`를 prop으로 직접 받습니다. 새 컴포넌트에서는 `forwardRef`가 필요 없습니다. 기존 `components/ui/*`의 `forwardRef`는 동작에 문제가 없으므로 일괄 변환하지 않습니다.
+React 19에서는 함수 컴포넌트가 `ref`를 prop으로 직접 받습니다. `forwardRef`는 쓰지 않습니다. 생성된 `components/ui/button.tsx`도 `forwardRef` 없이 Base UI 프리미티브에 props를 그대로 넘깁니다.
 
 ```tsx
 function TextField({
@@ -219,11 +224,13 @@ function TextField({
 - `<Context value={...}>`: React 19에서는 `<Context.Provider>` 대신 Context를 직접 Provider로 쓸 수 있다.
 - `useEffectEvent`: Effect 안에서 최신 props/state를 읽되 의존성에는 넣고 싶지 않은 로직에 사용.
 - `<Activity>`: Cache Components 네비게이션에서 라우트가 숨겨져도 상태가 유지된다. Effect cleanup을 반드시 작성한다.
-- 메타데이터 태그(`<title>`, `<meta>`)는 컴포넌트에서 직접 렌더링할 수 있지만, 이 프로젝트에서는 `metadata` / `generateMetadata`를 사용한다.
+- 메타데이터 태그(`<title>`, `<meta>`)는 컴포넌트에서 직접 렌더링할 수 있지만, 이 프로젝트에서는 `metadata` / `generateMetadata`를 사용한다 (`app/layout.tsx` 참고).
 
 ## Props 설계
 
-### Props 타입은 DOM 타입을 확장
+### Props 타입은 프리미티브/DOM 타입을 확장
+
+DOM 요소를 감싸면 `React.ComponentProps<"tag">`, Base UI 프리미티브를 감싸면 `<Primitive>.Props` 타입을 씁니다 (`components/ui/button.tsx`는 `ButtonPrimitive.Props & VariantProps<typeof buttonVariants>`).
 
 ```tsx
 type AlertProps = React.ComponentProps<"div"> & {
@@ -245,23 +252,52 @@ export function Alert({ tone = "info", className, ...props }: AlertProps) {
 }
 ```
 
-- 네이티브 속성(`onClick`, `disabled`, `aria-*`)을 직접 선언하지 말고 `React.ComponentProps<"tag">`로 받는다.
+- 네이티브 속성(`onClick`, `disabled`, `aria-*`)을 직접 선언하지 말고 위 타입으로 받는다.
 - prop이 7~8개를 넘거나 boolean prop이 여럿이면 컴포지션으로 나눈다.
 - 기본값은 구조 분해에서 지정한다.
 
-### `asChild` (Radix Slot)
+### `render` prop (Base UI)
 
-DOM 구조를 바꾸지 않고 다른 요소(예: `Link`)에 스타일/동작을 입히려면 `asChild`를 사용합니다. `components/ui/button.tsx`가 이를 지원합니다.
+이 프로젝트의 shadcn은 Radix가 아니라 **Base UI**입니다. `asChild`는 없고, 다른 요소(예: `Link`)에 스타일/동작을 입히려면 `render` prop을 사용합니다.
 
 ```tsx
-<Button asChild>
-  <Link href="/auth/login">로그인</Link>
-</Button>
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+
+<Button render={<Link href="/about" />} nativeButton={false}>
+  소개
+</Button>;
 ```
 
-### 다형성 컴포넌트
+- `render`로 `<button>`이 아닌 요소(`<a>`, `Link`, `<span>`)를 렌더링하면 **`nativeButton={false}`** 를 함께 지정한다.
+- 트리거 컴포넌트도 같은 방식이다: `<DialogTrigger render={<Button variant="outline" />}>열기</DialogTrigger>`. 트리거를 별도의 `<div>`나 `<Button>`으로 감싸지 않는다.
+- `render`에는 요소 또는 `(props, state) => ReactElement` 함수를 줄 수 있다.
+- Radix 코드(`asChild`, `data-[state=open]`)를 가져올 때는 `.agents/skills/shadcn/rules/base-vs-radix.md`와 `migrate-radix-to-base` 스킬을 따른다.
 
-`as` prop 방식은 타입이 복잡해집니다. 대부분의 경우 `asChild`로 충분하며, 필요한 곳에서만 제네릭 `as`를 구현합니다.
+### 다형성 컴포넌트: `useRender`
+
+직접 만드는 컴포넌트가 `render`를 지원해야 하면 Base UI의 `useRender`를 씁니다 (Radix의 `Slot` 대응).
+
+```tsx
+import { mergeProps } from "@base-ui/react/merge-props";
+import { useRender } from "@base-ui/react/use-render";
+import { cn } from "@/lib/utils";
+
+interface TagProps extends useRender.ComponentProps<"span"> {}
+
+export function Tag({ render, className, ...props }: TagProps) {
+  return useRender({
+    defaultTagName: "span",
+    render,
+    props: mergeProps<"span">(
+      { className: cn("rounded-md bg-muted px-2 py-0.5 text-xs", className) },
+      props,
+    ),
+  });
+}
+```
+
+`as` prop 방식은 타입이 복잡해지므로 만들지 않습니다.
 
 ## 재사용 패턴
 
@@ -269,6 +305,7 @@ DOM 구조를 바꾸지 않고 다른 요소(예: `Link`)에 스타일/동작을
 
 ```tsx
 import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 const panelVariants = cva("rounded-lg border bg-card text-card-foreground", {
   variants: {
@@ -297,59 +334,39 @@ export function Panel({ size, tone, className, ...props }: PanelProps) {
 
 import { createContext, use, useState } from "react";
 
-type TabsContextValue = { value: string; setValue: (v: string) => void };
-const TabsContext = createContext<TabsContextValue | null>(null);
+type DisclosureContextValue = { open: boolean; toggle: () => void };
+const DisclosureContext = createContext<DisclosureContextValue | null>(null);
 
-function useTabs() {
-  const ctx = use(TabsContext);
-  if (!ctx) throw new Error("Tabs 컴포넌트 안에서만 사용할 수 있습니다");
+function useDisclosure() {
+  const ctx = use(DisclosureContext);
+  if (!ctx) throw new Error("Disclosure 컴포넌트 안에서만 사용할 수 있습니다");
   return ctx;
 }
 
-export function Tabs({
-  defaultValue,
-  children,
-}: {
-  defaultValue: string;
-  children: React.ReactNode;
-}) {
-  const [value, setValue] = useState(defaultValue);
-  return <TabsContext value={{ value, setValue }}>{children}</TabsContext>;
+export function Disclosure({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <DisclosureContext value={{ open, toggle: () => setOpen((v) => !v) }}>
+      {children}
+    </DisclosureContext>
+  );
 }
 
-export function TabsTrigger({
-  value,
-  children,
-}: {
-  value: string;
-  children: React.ReactNode;
-}) {
-  const tabs = useTabs();
+export function DisclosureTrigger({ children }: { children: React.ReactNode }) {
+  const { open, toggle } = useDisclosure();
   return (
-    <button
-      role="tab"
-      aria-selected={tabs.value === value}
-      onClick={() => tabs.setValue(value)}
-    >
+    <button aria-expanded={open} onClick={toggle}>
       {children}
     </button>
   );
 }
 
-export function TabsContent({
-  value,
-  children,
-}: {
-  value: string;
-  children: React.ReactNode;
-}) {
-  return useTabs().value === value ? (
-    <div role="tabpanel">{children}</div>
-  ) : null;
+export function DisclosureContent({ children }: { children: React.ReactNode }) {
+  return useDisclosure().open ? <div>{children}</div> : null;
 }
 ```
 
-접근성이 중요한 복합 위젯(Tabs, Dialog, Accordion 등)은 직접 만들지 말고 Radix 기반 shadcn 컴포넌트를 추가합니다 (`npx shadcn@latest add tabs`).
+접근성이 중요한 복합 위젯(Tabs, Dialog, Accordion, Select, Menu 등)은 직접 만들지 말고 Base UI 기반 shadcn 컴포넌트를 추가합니다 (`npx shadcn@latest add tabs`). 위 예시는 패턴 설명용입니다.
 
 ### 커스텀 훅
 
@@ -365,15 +382,16 @@ function useToggle(initial = false) {
 }
 ```
 
-`useCallback`으로 모든 함수를 감쌀 필요는 없습니다 (아래 성능 절 참고).
+`useCallback`으로 모든 함수를 감쌀 필요는 없습니다 (아래 성능 절 참고). 훅 파일은 루트 `hooks/`에 둡니다 (`@/hooks`).
 
 ## 데이터 패칭 위치
 
-| 상황                           | 방법                                                                |
-| ------------------------------ | ------------------------------------------------------------------- |
-| 초기 렌더에 필요한 데이터      | Server Component에서 직접 조회 + `Suspense`                         |
-| 사용자 변경 (폼 제출)          | Server Action + `useActionState`                                    |
-| 브라우저 전용 실시간/반복 조회 | Client Component + `lib/supabase/client.ts` 또는 SWR/TanStack Query |
+| 상황                           | 방법                                              |
+| ------------------------------ | ------------------------------------------------- |
+| 초기 렌더에 필요한 데이터      | Server Component에서 직접 조회 + `Suspense`       |
+| 반복되는 공개 데이터           | `use cache` + `cacheLife` / `cacheTag`            |
+| 사용자 변경 (폼 제출)          | Server Action + `useActionState`                  |
+| 브라우저 전용 실시간/반복 조회 | Client Component + SWR/TanStack Query (도입 시)   |
 
 `useEffect` 안에서 `fetch` + `useState`로 로딩/에러를 직접 관리하는 `DataFetcher` 류의 render-props 컴포넌트는 만들지 않습니다. 서버 패칭 또는 Suspense + `use()`를 사용하세요.
 
@@ -392,6 +410,7 @@ const Chart = dynamic(() => import("@/components/chart"), {
 
 - **긴 리스트**: 수백 개 이상이면 가상화 라이브러리(`@tanstack/react-virtual` 등)를 검토합니다. 라이브러리 API는 버전마다 다르므로 도입 시 최신 문서를 확인합니다.
 - **props 안정성**: 컴파일러가 꺼진 상태에서 `memo`된 자식에게 인라인 객체/함수를 넘기면 메모이제이션이 무효화됩니다.
+- **아이콘**: `lucide-react`는 필요한 아이콘만 named import 합니다.
 
 ## 타입 안전성
 
@@ -406,7 +425,7 @@ type SelectProps<T> = {
   getKey: (option: T) => string;
 };
 
-export function Select<T>({
+export function NativeSelect<T>({
   options,
   value,
   onChange,
@@ -441,10 +460,6 @@ type ActionProps =
   | { loading?: false; onClick: () => void };
 ```
 
-### Supabase 타입
-
-DB 타입은 `supabase gen types typescript` 또는 MCP의 `generate_typescript_types`로 생성하고 `createClient<Database>()`에 연결합니다. 수동 타입 선언은 피합니다.
-
 ## 안티패턴
 
 ```tsx
@@ -456,6 +471,8 @@ DB 타입은 `supabase gen types typescript` 또는 MCP의 `generate_typescript_
 // 배열 index를 key로 사용 (순서가 바뀌는 리스트)
 // useEffect로 파생 상태 계산 (렌더 중 계산하거나 useMemo 사용)
 // Effect 안에서 동기 setState로 mounted 플래그 설정 (useSyncExternalStore 사용)
+// asChild 사용 (Base UI에서는 render)
+// 트리거를 <div>나 <Button>으로 한 번 더 감싸기
 ```
 
 ## 체크리스트
@@ -463,13 +480,18 @@ DB 타입은 `supabase gen types typescript` 또는 MCP의 `generate_typescript_
 **설계**
 
 - [ ] 단일 책임, 컴포지션 활용
-- [ ] 네이티브 props는 `React.ComponentProps<"tag">`로 확장
+- [ ] 네이티브 props는 `React.ComponentProps<"tag">` 또는 프리미티브 `Props`로 확장
 
 **Server/Client**
 
 - [ ] Server Component 우선, `'use client'`는 말단에만
 - [ ] 요청 시점 데이터는 `Suspense` 경계 안에서 읽기
 - [ ] `params`/`searchParams`는 `await`
+
+**shadcn / Base UI**
+
+- [ ] `asChild`가 아니라 `render`, 비-button 요소는 `nativeButton={false}`
+- [ ] 복합 위젯은 `npx shadcn@latest add`로 추가
 
 **타입 / 성능**
 
