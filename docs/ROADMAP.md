@@ -117,7 +117,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
     - 플래그 가드는 `app/(site)/blog/layout.tsx`, `app/admin/layout.tsx` 두 곳에서 처리(정적 플래그라 세션 검사와 달리 부분 렌더링 문제 없음)
     - `[slug]`/`[id]` 페이지는 cacheComponents 빌드 오류 때문에 `params` await를 `<Suspense>` 안에서 수행
 
-- **Task 002: 도메인 타입 및 데이터베이스 스키마 설계**
+- **Task 002: 도메인 타입 및 데이터베이스 스키마 설계** ✅
   - 관련 기능: F001~F014 데이터 / 관련 파일: `lib/types/`, `lib/db/schema.ts`, `lib/schemas/`
   - PRD 데이터 모델 10종(Profile, Experience, Education, Certification, LanguageScore, Thesis, Project, Post, ContactMessage, SiteSetting)을 Drizzle `pgTable` 스키마로 정의(마이그레이션 실행은 Task 011)
   - 목록형 필드(`skills`, `duties`, `achievements`, `keywords`, `techStack`, `tags`)는 `text[]`, `focusAreas`·`links`·`gpa`는 `jsonb` 타입 지정, `Post.status`는 `draft | published` enum, `Project.slug`·`Post.slug`는 unique
@@ -126,10 +126,14 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 개인정보 제외 필드(연봉, 등록번호, 퇴직사유, 고등학교)가 스키마에 없는지 검토
   - **수락 기준**: 스키마·타입 파일이 타입 검사를 통과하고, Phase 2 더미 데이터가 이 타입을 그대로 사용할 수 있다
   - **테스트 체크리스트**
-    - [ ] 정상: 명령 → `npm run typecheck` → 통과
-    - [ ] 오류: 명령 → zod 스키마에 잘못된 이메일·빈 이름을 넣는 임시 스크립트 실행 → 필드별 오류 반환
-    - [ ] 엣지: 수동 확인 → 스키마 파일 검토 → 금지된 개인정보 필드 0개
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 명령 → `npm run typecheck` → 통과
+    - [x] 오류: 명령 → zod 스키마에 잘못된 이메일·빈 이름을 넣는 임시 스크립트 실행 → 필드별 오류 반환
+    - [x] 엣지: 수동 확인 → 스키마 파일 검토 → 금지된 개인정보 필드 0개
+  - **테스트 결과**: 통과 (2026-10-22)
+    - `npm run check && npm run build` 통과, `drizzle-orm ^0.45.4`·`zod ^4.6.7` 직접 의존성 추가
+    - 임시 검증: 빈 이름·잘못된 이메일·짧은 내용 입력 시 `z.flattenError`가 필드별 오류 반환, 정상 입력은 통과
+    - 개인정보 키워드 grep 결과 `lib/` 0건
+    - 마이그레이션·DB 연결(`lib/db/index.ts`, `drizzle.config.ts`)은 Task 011 범위라 만들지 않음
 
 - **Task 003: 공통 레이아웃 골격 구현**
   - 관련 기능: F015 / 관련 파일: `app/(site)/layout.tsx`, `app/admin/(protected)/layout.tsx`, `components/layout/`

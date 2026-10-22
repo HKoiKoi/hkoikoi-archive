@@ -14,7 +14,7 @@
 | 유틸리티  | `cn` 패키지, `class-variance-authority`, `lucide-react`, `tw-animate-css` |
 | 도구      | ESLint 9 flat config (`eslint-config-next`), TypeScript 5                 |
 
-아직 없는 것(필요할 때 추가): 데이터베이스/인증, 폼 라이브러리, 테마 전환(`next-themes`), `proxy.ts`, 테스트.
+아직 없는 것(필요할 때 추가): DB 연결·마이그레이션(`drizzle-orm`은 스키마용으로만 설치), 인증, 폼 라이브러리, 테마 전환(`next-themes`), `proxy.ts`, 테스트.
 
 ## 전체 구조
 
@@ -25,6 +25,9 @@ hkoikoi-archive/
 │   └── ui/                 # shadcn/ui 컴포넌트 (현재 button)
 ├── lib/
 │   ├── site-config.ts      # 릴리스 플래그(features), 내비게이션, resumeUrl
+│   ├── db/schema.ts        # Drizzle pgTable 10종 (연결·마이그레이션은 Task 011)
+│   ├── types/              # 화면용 뷰 타입 (DB 타입과 분리)
+│   ├── schemas/contact.ts  # 연락 폼 Zod 4 스키마
 │   └── utils.ts            # cn() 재export
 ├── docs/guides/            # 개발 가이드
 ├── .agents/skills/         # 에이전트 스킬 (shadcn, migrate-radix-to-base)
