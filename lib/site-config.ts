@@ -24,6 +24,12 @@ export const navItems: readonly NavItem[] = [
   { label: "연락", href: "/contact" },
 ];
 
+/** TODO: 실제 GitHub·이메일 값을 받으면 교체한다. 현재는 더미 값이다. */
+export const contactLinks = {
+  github: "https://github.com/hkoikoi",
+  email: "hello@example.com",
+} as const;
+
 /** 이력서 PDF 경로. 1차에서는 비어 있다. */
 export const resumeUrl: string | undefined = undefined;
 

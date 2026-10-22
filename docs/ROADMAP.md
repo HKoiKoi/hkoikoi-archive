@@ -135,7 +135,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
     - 개인정보 키워드 grep 결과 `lib/` 0건
     - 마이그레이션·DB 연결(`lib/db/index.ts`, `drizzle.config.ts`)은 Task 011 범위라 만들지 않음
 
-- **Task 003: 공통 레이아웃 골격 구현**
+- **Task 003: 공통 레이아웃 골격 구현** ✅
   - 관련 기능: F015 / 관련 파일: `app/(site)/layout.tsx`, `app/admin/(protected)/layout.tsx`, `components/layout/`
   - `components/layout/site-header.tsx`(로고, 메뉴: 소개·프로젝트·블로그·연락, 이력서 CTA 자리), `site-footer.tsx`(자격·어학·논문, GitHub·이메일, 관리자 링크) 골격 작성
   - 메뉴 항목은 `lib/site-config.ts`에서 읽고, `features.blog`·`features.admin`이 꺼지면 블로그 메뉴·관리자 링크를 렌더링하지 않음
@@ -143,9 +143,14 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 현재 경로 강조가 필요한 내비 부분만 클라이언트 컴포넌트로 분리
   - **수락 기준**: 모든 공개 페이지에 같은 헤더·푸터가 보이고 메뉴로 각 페이지 간 이동이 된다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → 헤더 메뉴 각 항목 클릭 → 해당 페이지로 이동하고 현재 메뉴 강조
-    - [ ] 엣지: 수동 확인 → 1차 플래그 상태에서 헤더·푸터 확인 → 블로그 메뉴와 관리자 링크 미표시
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → 헤더 메뉴 각 항목 클릭 → 해당 페이지로 이동하고 현재 메뉴 강조
+    - [x] 엣지: 수동 확인 → 1차 플래그 상태에서 헤더·푸터 확인 → 블로그 메뉴와 관리자 링크 미표시
+  - **테스트 결과**: 통과 (2026-10-22)
+    - `npm run check && npm run build` 통과
+    - 공개 6개 경로 모두 같은 헤더·푸터 확인, `aria-current="page"`로 현재 메뉴 강조(`/projects/sample`에서는 프로젝트 메뉴 강조)
+    - 플래그 off: 블로그 메뉴·푸터 관리자 링크 미표시 / 임시로 true로 재빌드하면 둘 다 표시 후 false로 원복
+    - 클라이언트 컴포넌트는 `components/layout/nav-link.tsx` 하나뿐. cacheComponents에서 `usePathname`이 동적 라우트에서 suspend 되므로 헤더 내비를 `<Suspense>`로 감쌈
+    - GitHub·이메일은 `lib/site-config.ts`의 더미 값(TODO)
 
 ### Phase 2: UI/UX 완성 (더미 데이터 활용)
 

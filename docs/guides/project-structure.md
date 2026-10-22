@@ -22,6 +22,7 @@
 hkoikoi-archive/
 ├── app/                    # Next.js App Router
 ├── components/
+│   ├── layout/             # 사이트 헤더·푸터, nav-link(client)
 │   └── ui/                 # shadcn/ui 컴포넌트 (현재 button)
 ├── lib/
 │   ├── site-config.ts      # 릴리스 플래그(features), 내비게이션, resumeUrl
