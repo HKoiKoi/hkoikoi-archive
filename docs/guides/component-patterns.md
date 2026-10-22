@@ -386,12 +386,12 @@ function useToggle(initial = false) {
 
 ## 데이터 패칭 위치
 
-| 상황                           | 방법                                              |
-| ------------------------------ | ------------------------------------------------- |
-| 초기 렌더에 필요한 데이터      | Server Component에서 직접 조회 + `Suspense`       |
-| 반복되는 공개 데이터           | `use cache` + `cacheLife` / `cacheTag`            |
-| 사용자 변경 (폼 제출)          | Server Action + `useActionState`                  |
-| 브라우저 전용 실시간/반복 조회 | Client Component + SWR/TanStack Query (도입 시)   |
+| 상황                           | 방법                                            |
+| ------------------------------ | ----------------------------------------------- |
+| 초기 렌더에 필요한 데이터      | Server Component에서 직접 조회 + `Suspense`     |
+| 반복되는 공개 데이터           | `use cache` + `cacheLife` / `cacheTag`          |
+| 사용자 변경 (폼 제출)          | Server Action + `useActionState`                |
+| 브라우저 전용 실시간/반복 조회 | Client Component + SWR/TanStack Query (도입 시) |
 
 `useEffect` 안에서 `fetch` + `useState`로 로딩/에러를 직접 관리하는 `DataFetcher` 류의 render-props 컴포넌트는 만들지 않습니다. 서버 패칭 또는 Suspense + `use()`를 사용하세요.
 
@@ -456,8 +456,7 @@ export function NativeSelect<T>({
 
 ```tsx
 type ActionProps =
-  | { loading: true; onClick?: never }
-  | { loading?: false; onClick: () => void };
+  { loading: true; onClick?: never } | { loading?: false; onClick: () => void };
 ```
 
 ## 안티패턴
@@ -503,4 +502,4 @@ type ActionProps =
 
 - [ ] 의미 있는 HTML 태그, 필요한 ARIA 속성, 키보드 조작
 - [ ] Effect cleanup 작성 (`<Activity>`로 숨겨질 때 정리됨)
-- [ ] `npm run lint`, `npx tsc --noEmit` 통과
+- [ ] `npm run check` 통과

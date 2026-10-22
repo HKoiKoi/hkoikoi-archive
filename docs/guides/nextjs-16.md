@@ -5,17 +5,17 @@
 
 ## 현재 환경
 
-| 항목               | 버전 / 설정                                                                          |
-| ------------------ | ------------------------------------------------------------------------------------ |
-| Next.js            | 16.4.2 (App Router 전용, Turbopack 기본)                                             |
-| React              | 19.3                                                                                 |
-| Node.js            | 20.9 이상 (필수)                                                                     |
-| TypeScript         | 5.1 이상, `strict`                                                                   |
-| Cache Components   | `next.config.ts`에서 `cacheComponents: true`                                         |
-| Partial Prefetching | `partialPrefetching: true` (`cacheComponents` 필수)                                 |
-| 스타일             | `turbopack.rules`의 `*.css` → `@tailwindcss/turbopack` 로더                          |
-| 에이전트 피드백    | `experimental.agentFeedback: true` (`next dev`가 `AGENTS.md` 블록 관리)              |
-| 린트               | ESLint 9 flat config (`eslint`), `next lint`는 제거됨                                |
+| 항목                | 버전 / 설정                                                             |
+| ------------------- | ----------------------------------------------------------------------- |
+| Next.js             | 16.4.2 (App Router 전용, Turbopack 기본)                                |
+| React               | 19.3                                                                    |
+| Node.js             | 20.9 이상 (필수)                                                        |
+| TypeScript          | 5.1 이상, `strict`                                                      |
+| Cache Components    | `next.config.ts`에서 `cacheComponents: true`                            |
+| Partial Prefetching | `partialPrefetching: true` (`cacheComponents` 필수)                     |
+| 스타일              | `turbopack.rules`의 `*.css` → `@tailwindcss/turbopack` 로더             |
+| 에이전트 피드백     | `experimental.agentFeedback: true` (`next dev`가 `AGENTS.md` 블록 관리) |
+| 린트                | ESLint 9 flat config (`eslint`), `next lint`는 제거됨                   |
 
 ## 필수 규칙
 
@@ -274,7 +274,7 @@ export default function Title({ title }: { title: string }) {
 
 ```bash
 npm run lint                 # ESLint (eslint)
-npx tsc --noEmit             # 타입 체크
+npm run typecheck            # 타입 체크
 npx next typegen             # PageProps/LayoutProps/RouteContext 타입 생성
 npm run build                # 프로덕션 빌드 (Cache Components 검증 포함)
 ```

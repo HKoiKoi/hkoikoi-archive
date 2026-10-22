@@ -5,16 +5,16 @@
 
 ## 현재 스택
 
-| 항목        | 버전 / 설정                                                         |
-| ----------- | ------------------------------------------------------------------- |
-| Next.js     | 16.4.2 (App Router, Turbopack, `cacheComponents` + `partialPrefetching`) |
-| React       | 19.3                                                                |
-| Tailwind    | 4.3 (`@tailwindcss/turbopack` 로더, PostCSS 설정 없음)              |
-| shadcn/ui   | `base-nova` 스타일, **Base UI**(`@base-ui/react`) 기반              |
-| 유틸리티    | `cn` 패키지, `class-variance-authority`, `lucide-react`, `tw-animate-css` |
-| 도구        | ESLint 9 flat config (`eslint-config-next`), TypeScript 5           |
+| 항목      | 버전 / 설정                                                               |
+| --------- | ------------------------------------------------------------------------- |
+| Next.js   | 16.4.2 (App Router, Turbopack, `cacheComponents` + `partialPrefetching`)  |
+| React     | 19.3                                                                      |
+| Tailwind  | 4.3 (`@tailwindcss/turbopack` 로더, PostCSS 설정 없음)                    |
+| shadcn/ui | `base-nova` 스타일, **Base UI**(`@base-ui/react`) 기반                    |
+| 유틸리티  | `cn` 패키지, `class-variance-authority`, `lucide-react`, `tw-animate-css` |
+| 도구      | ESLint 9 flat config (`eslint-config-next`), TypeScript 5                 |
 
-아직 없는 것(필요할 때 추가): 데이터베이스/인증, 폼 라이브러리, 테마 전환(`next-themes`), Prettier, Git hooks, `proxy.ts`, 테스트.
+아직 없는 것(필요할 때 추가): 데이터베이스/인증, 폼 라이브러리, 테마 전환(`next-themes`), `proxy.ts`, 테스트.
 
 ## 전체 구조
 
@@ -171,4 +171,4 @@ import { helper } from "./helper";
 - [ ] `@/` 별칭 사용, `src/` 경로 쓰지 않기
 - [ ] `cn`은 `@/lib/utils`에서 import (`components/ui/*` 생성 코드는 예외)
 - [ ] 요청 시점 데이터를 읽는 컴포넌트에 `Suspense` 경계 설정
-- [ ] `npm run lint`, `npx tsc --noEmit` 통과
+- [ ] `npm run check` 통과

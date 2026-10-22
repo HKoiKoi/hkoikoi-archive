@@ -9,10 +9,15 @@ npm run dev     # 개발 서버 (Turbopack)
 npm run build   # 프로덕션 빌드
 npm run start   # 빌드 결과 실행
 npm run lint    # ESLint 9 (flat config, eslint-config-next)
+npm run lint:fix     # ESLint 자동 수정
+npm run typecheck    # next typegen && tsc --noEmit
+npm run format       # Prettier 쓰기 (format:check는 검사만)
+npm run check        # lint + typecheck + format:check (푸시·CI 기준)
 ```
 
 - 테스트 러너가 없다(단일 테스트 실행 명령 없음).
-- `.claude/hooks/format-hook.sh`가 Edit/Write 후 `npx --no-install prettier`를 실행한다. Prettier는 의존성에 없으므로 설치되어 있지 않으면 아무 일도 일어나지 않는다.
+- `.claude/hooks/format-hook.sh`가 Edit/Write 후 `npx --no-install prettier`를 실행한다. Prettier는 `.prettierrc.json`(Tailwind 클래스 정렬 플러그인 포함)을 따른다.
+- Husky: `pre-commit`은 lint-staged(스테이징 파일 ESLint `--max-warnings=0` + Prettier)와 `typecheck`, `commit-msg`는 commitlint(`타입: 제목`), `pre-push`는 `npm run check`를 실행한다. CI(`.github/workflows/ci.yml`)도 `check`와 `build`를 돌린다.
 
 ## Next.js 주의
 

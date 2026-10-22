@@ -215,12 +215,21 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileValues } from "@/lib/schemas/profile";
 import { updateProfileAction, type ActionState } from "../actions";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
 const initialState: ActionState = { ok: false, message: "" };
 
-export function ProfileForm({ defaultValues }: { defaultValues: ProfileValues }) {
+export function ProfileForm({
+  defaultValues,
+}: {
+  defaultValues: ProfileValues;
+}) {
   const [state, formAction, isPending] = useActionState(
     updateProfileAction,
     initialState,
@@ -380,7 +389,7 @@ useEffect(() => {
 **품질**
 
 - [ ] `npm run lint`
-- [ ] `npx tsc --noEmit`
+- [ ] `npm run check`
 - [ ] `npm run build`
 
 ## 참고

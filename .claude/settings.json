@@ -9,6 +9,13 @@
       "mcp__playwright",
       "mcp__sequential-thinking",
       "mcp__shrimp-task-manager"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(rm -rf*)"
     ]
   },
   "hooks": {

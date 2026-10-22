@@ -4,18 +4,18 @@
 
 ## 기술 스택
 
-| 도구                      | 버전     | 비고                                                                 |
-| ------------------------- | -------- | -------------------------------------------------------------------- |
-| Tailwind CSS              | 4.3      | CSS-first 설정. `tailwind.config.ts` 없음                            |
-| `@tailwindcss/turbopack`  | 4        | `next.config.ts`의 `turbopack.rules`로 `*.css`에 연결. PostCSS 설정 없음 |
-| shadcn/ui                 | base-nova | `components.json`, **Base UI**(`@base-ui/react`) 기반, `baseColor: neutral` |
-| `shadcn/tailwind.css`     |          | shadcn 공용 유틸리티/변형, `globals.css`에서 import                  |
-| `tw-animate-css`          | 1.x      | `@import "tw-animate-css"`로 로드                                    |
-| `cn`                      | 0.5      | clsx + tailwind-merge 대체. `lib/utils.ts`에서 재export             |
-| class-variance-authority  | 0.7      | 변형 정의                                                            |
-| lucide-react              | 1.x      | 아이콘 (`iconLibrary: lucide`)                                       |
+| 도구                     | 버전      | 비고                                                                        |
+| ------------------------ | --------- | --------------------------------------------------------------------------- |
+| Tailwind CSS             | 4.3       | CSS-first 설정. `tailwind.config.ts` 없음                                   |
+| `@tailwindcss/turbopack` | 4         | `next.config.ts`의 `turbopack.rules`로 `*.css`에 연결. PostCSS 설정 없음    |
+| shadcn/ui                | base-nova | `components.json`, **Base UI**(`@base-ui/react`) 기반, `baseColor: neutral` |
+| `shadcn/tailwind.css`    |           | shadcn 공용 유틸리티/변형, `globals.css`에서 import                         |
+| `tw-animate-css`         | 1.x       | `@import "tw-animate-css"`로 로드                                           |
+| `cn`                     | 0.5       | clsx + tailwind-merge 대체. `lib/utils.ts`에서 재export                     |
+| class-variance-authority | 0.7       | 변형 정의                                                                   |
+| lucide-react             | 1.x       | 아이콘 (`iconLibrary: lucide`)                                              |
 
-다크모드 전환 UI(`next-themes` 등)와 Prettier(Tailwind 클래스 정렬 플러그인)는 아직 설치되어 있지 않습니다.
+다크모드 전환 UI(`next-themes` 등)는 아직 설치되어 있지 않습니다. Tailwind 클래스 정렬은 Prettier 플러그인이 자동으로 처리합니다.
 
 ## Tailwind v4 설정 구조
 
