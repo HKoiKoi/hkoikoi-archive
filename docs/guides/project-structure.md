@@ -14,7 +14,7 @@
 | 유틸리티  | `cn` 패키지, `class-variance-authority`, `lucide-react`, `tw-animate-css` |
 | 도구      | ESLint 9 flat config (`eslint-config-next`), TypeScript 5                 |
 
-아직 없는 것(필요할 때 추가): 데이터베이스/인증, 폼 라이브러리, 테마 전환(`next-themes`), `proxy.ts`, 테스트.
+아직 없는 것(필요할 때 추가): DB 연결·마이그레이션(`drizzle-orm`은 스키마용으로만 설치), 인증, 폼 라이브러리, 테마 전환(`next-themes`), `proxy.ts`, 테스트.
 
 ## 전체 구조
 
@@ -22,10 +22,14 @@
 hkoikoi-archive/
 ├── app/                    # Next.js App Router
 ├── components/
+│   ├── layout/             # 사이트 헤더·푸터, nav-link(client)
 │   └── ui/                 # shadcn/ui 컴포넌트 (현재 button)
 ├── lib/
+│   ├── site-config.ts      # 릴리스 플래그(features), 내비게이션, resumeUrl
+│   ├── db/schema.ts        # Drizzle pgTable 10종 (연결·마이그레이션은 Task 011)
+│   ├── types/              # 화면용 뷰 타입 (DB 타입과 분리)
+│   ├── schemas/contact.ts  # 연락 폼 Zod 4 스키마
 │   └── utils.ts            # cn() 재export
-├── public/                 # 정적 에셋 (create-next-app 기본 svg)
 ├── docs/guides/            # 개발 가이드
 ├── .agents/skills/         # 에이전트 스킬 (shadcn, migrate-radix-to-base)
 ├── .claude/                # Claude Code 에이전트·스킬·훅 설정
@@ -48,10 +52,21 @@ hkoikoi-archive/
 
 ```
 app/
-├── layout.tsx      # 루트 레이아웃 (Geist/Geist Mono 폰트, globals.css)
-├── page.tsx        # / (현재 create-next-app 기본 화면)
-├── globals.css     # Tailwind v4 + shadcn 테마 변수
-└── favicon.ico
+├── layout.tsx          # 루트 레이아웃 (lang="ko", 메타데이터 템플릿, Geist 폰트)
+├── not-found.tsx       # 매칭되지 않는 URL(/foo)과 관리자 notFound() 처리
+├── globals.css         # Tailwind v4 + shadcn 테마 변수
+├── favicon.ico
+├── (site)/             # 공개 사이트 라우트 그룹
+│   ├── not-found.tsx   # 그룹 안에서 notFound()가 던져질 때
+│   ├── page.tsx        # /
+│   ├── about/          # /about
+│   ├── projects/       # /projects, /projects/[slug]
+│   ├── credentials/    # /credentials
+│   ├── blog/           # /blog, /blog/[slug] (layout.tsx가 features.blog 가드)
+│   └── contact/        # /contact
+└── admin/              # layout.tsx가 features.admin 가드
+    ├── login/          # /admin/login
+    └── (protected)/    # /admin, posts/new, posts/[id], projects/new, projects/[id]
 ```
 
 파일 규칙:

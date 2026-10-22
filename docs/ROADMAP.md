@@ -97,7 +97,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
 
 ### Phase 1: 애플리케이션 골격 구축
 
-- **Task 001: 스타터 정리 및 전체 라우트 구조 생성** - 우선순위
+- **Task 001: 스타터 정리 및 전체 라우트 구조 생성** ✅ - 우선순위
   - 관련 기능: F015(구조), 전 페이지 / 관련 파일: `app/**`, `lib/site-config.ts`, `public/`
   - create-next-app 기본 화면(`app/page.tsx`)과 `public/*.svg` 제거, 루트 레이아웃 `lang="ko"` 및 사이트 메타데이터(제목 템플릿 `%s | HKoiKoi.dev`, 설명) 설정
   - 공개 라우트 그룹 `app/(site)/` 아래 빈 페이지 생성: `/`, `/about`, `/projects`, `/projects/[slug]`, `/credentials`(자격·어학·논문), `/blog`, `/blog/[slug]`, `/contact`
@@ -106,13 +106,18 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 릴리스 플래그 `lib/site-config.ts` 작성: `features.blog`, `features.admin`(1차 false), 내비게이션 메뉴 정의, 이력서 경로(`resumeUrl`) 설정. 플래그가 꺼지면 블로그·관리자 라우트는 `notFound()` 처리
   - **수락 기준**: 모든 경로가 404 없이 제목만 있는 빈 페이지로 열리고, 플래그를 끄면 블로그·관리자 경로는 404를 반환한다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → `/`, `/about`, `/projects`, `/projects/sample`, `/credentials`, `/contact` 접속 → 각 페이지 제목 표시
-    - [ ] 오류: 수동 확인 → 존재하지 않는 `/foo` 접속 → 공개 그룹 `not-found` 화면 표시
-    - [ ] 엣지: 수동 확인 → `features.blog=false` 상태에서 `/blog`, `/admin/login` 접속 → 404 표시
-    - [ ] 정상: 명령 → `npm run check && npm run build` → 통과, 빌드 출력에 모든 라우트 표시
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → `/`, `/about`, `/projects`, `/projects/sample`, `/credentials`, `/contact` 접속 → 각 페이지 제목 표시
+    - [x] 오류: 수동 확인 → 존재하지 않는 `/foo` 접속 → 루트 `app/not-found.tsx` 화면 표시(404). 공개 그룹 `(site)/not-found.tsx`는 그룹 안에서 `notFound()`가 던져질 때 쓰임
+    - [x] 엣지: 수동 확인 → `features.blog=false` 상태에서 `/blog`, `/admin/login` 접속 → 404 표시
+    - [x] 정상: 명령 → `npm run check && npm run build` → 통과, 빌드 출력에 모든 라우트 표시
+  - **테스트 결과**: 통과 (2026-10-22)
+    - `npm run check && npm run build` 통과, 빌드 출력에 공개 8개·관리자 7개 라우트 표시
+    - 공개 6개 경로 200 + 제목 확인, `/foo` 404, 플래그 off에서 `/blog`, `/blog/x`, `/admin/*` 전부 404
+    - 플래그를 임시로 true로 바꿔 재빌드하면 블로그·관리자 경로가 모두 200으로 열림 확인 후 false로 원복
+    - 플래그 가드는 `app/(site)/blog/layout.tsx`, `app/admin/layout.tsx` 두 곳에서 처리(정적 플래그라 세션 검사와 달리 부분 렌더링 문제 없음)
+    - `[slug]`/`[id]` 페이지는 cacheComponents 빌드 오류 때문에 `params` await를 `<Suspense>` 안에서 수행
 
-- **Task 002: 도메인 타입 및 데이터베이스 스키마 설계**
+- **Task 002: 도메인 타입 및 데이터베이스 스키마 설계** ✅
   - 관련 기능: F001~F014 데이터 / 관련 파일: `lib/types/`, `lib/db/schema.ts`, `lib/schemas/`
   - PRD 데이터 모델 10종(Profile, Experience, Education, Certification, LanguageScore, Thesis, Project, Post, ContactMessage, SiteSetting)을 Drizzle `pgTable` 스키마로 정의(마이그레이션 실행은 Task 011)
   - 목록형 필드(`skills`, `duties`, `achievements`, `keywords`, `techStack`, `tags`)는 `text[]`, `focusAreas`·`links`·`gpa`는 `jsonb` 타입 지정, `Post.status`는 `draft | published` enum, `Project.slug`·`Post.slug`는 unique
@@ -121,12 +126,16 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 개인정보 제외 필드(연봉, 등록번호, 퇴직사유, 고등학교)가 스키마에 없는지 검토
   - **수락 기준**: 스키마·타입 파일이 타입 검사를 통과하고, Phase 2 더미 데이터가 이 타입을 그대로 사용할 수 있다
   - **테스트 체크리스트**
-    - [ ] 정상: 명령 → `npm run typecheck` → 통과
-    - [ ] 오류: 명령 → zod 스키마에 잘못된 이메일·빈 이름을 넣는 임시 스크립트 실행 → 필드별 오류 반환
-    - [ ] 엣지: 수동 확인 → 스키마 파일 검토 → 금지된 개인정보 필드 0개
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 명령 → `npm run typecheck` → 통과
+    - [x] 오류: 명령 → zod 스키마에 잘못된 이메일·빈 이름을 넣는 임시 스크립트 실행 → 필드별 오류 반환
+    - [x] 엣지: 수동 확인 → 스키마 파일 검토 → 금지된 개인정보 필드 0개
+  - **테스트 결과**: 통과 (2026-10-22)
+    - `npm run check && npm run build` 통과, `drizzle-orm ^0.45.4`·`zod ^4.6.7` 직접 의존성 추가
+    - 임시 검증: 빈 이름·잘못된 이메일·짧은 내용 입력 시 `z.flattenError`가 필드별 오류 반환, 정상 입력은 통과
+    - 개인정보 키워드 grep 결과 `lib/` 0건
+    - 마이그레이션·DB 연결(`lib/db/index.ts`, `drizzle.config.ts`)은 Task 011 범위라 만들지 않음
 
-- **Task 003: 공통 레이아웃 골격 구현**
+- **Task 003: 공통 레이아웃 골격 구현** ✅
   - 관련 기능: F015 / 관련 파일: `app/(site)/layout.tsx`, `app/admin/(protected)/layout.tsx`, `components/layout/`
   - `components/layout/site-header.tsx`(로고, 메뉴: 소개·프로젝트·블로그·연락, 이력서 CTA 자리), `site-footer.tsx`(자격·어학·논문, GitHub·이메일, 관리자 링크) 골격 작성
   - 메뉴 항목은 `lib/site-config.ts`에서 읽고, `features.blog`·`features.admin`이 꺼지면 블로그 메뉴·관리자 링크를 렌더링하지 않음
@@ -134,9 +143,14 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 현재 경로 강조가 필요한 내비 부분만 클라이언트 컴포넌트로 분리
   - **수락 기준**: 모든 공개 페이지에 같은 헤더·푸터가 보이고 메뉴로 각 페이지 간 이동이 된다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → 헤더 메뉴 각 항목 클릭 → 해당 페이지로 이동하고 현재 메뉴 강조
-    - [ ] 엣지: 수동 확인 → 1차 플래그 상태에서 헤더·푸터 확인 → 블로그 메뉴와 관리자 링크 미표시
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → 헤더 메뉴 각 항목 클릭 → 해당 페이지로 이동하고 현재 메뉴 강조
+    - [x] 엣지: 수동 확인 → 1차 플래그 상태에서 헤더·푸터 확인 → 블로그 메뉴와 관리자 링크 미표시
+  - **테스트 결과**: 통과 (2026-10-22)
+    - `npm run check && npm run build` 통과
+    - 공개 6개 경로 모두 같은 헤더·푸터 확인, `aria-current="page"`로 현재 메뉴 강조(`/projects/sample`에서는 프로젝트 메뉴 강조)
+    - 플래그 off: 블로그 메뉴·푸터 관리자 링크 미표시 / 임시로 true로 재빌드하면 둘 다 표시 후 false로 원복
+    - 클라이언트 컴포넌트는 `components/layout/nav-link.tsx` 하나뿐. cacheComponents에서 `usePathname`이 동적 라우트에서 suspend 되므로 헤더 내비를 `<Suspense>`로 감쌈
+    - GitHub·이메일은 `lib/site-config.ts`의 더미 값(TODO)
 
 ### Phase 2: UI/UX 완성 (더미 데이터 활용)
 

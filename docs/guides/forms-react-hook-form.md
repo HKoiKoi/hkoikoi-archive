@@ -5,14 +5,14 @@
 
 ## 현재 상태
 
-`package.json`에는 폼 관련 라이브러리가 없습니다 (`react-hook-form`, `@hookform/resolvers`, `zod` 모두 미설치). UI는 `components/ui/button.tsx`만 있습니다.
+`package.json`에는 `zod`(^4)만 직접 의존성으로 있고 `react-hook-form`, `@hookform/resolvers`는 미설치입니다. 연락 폼 스키마는 `lib/schemas/contact.ts`에 있습니다. UI는 `components/ui/button.tsx`만 있습니다.
 
 ```bash
 # 기본 폼에 필요한 shadcn 컴포넌트
 npx shadcn@latest add field input textarea label
 
 # RHF + Zod 검증이 필요할 때만
-npm install react-hook-form @hookform/resolvers zod
+npm install react-hook-form @hookform/resolvers
 ```
 
 - 폼 UI 컴포넌트를 추가하기 전에 `.agents/skills/shadcn/rules/forms.md`를 확인합니다. 이 프로젝트는 Base UI 스타일(`base-nova`)이므로 Radix 기준 예제(`asChild`, `data-[state=...]`)를 그대로 쓰지 않습니다.
