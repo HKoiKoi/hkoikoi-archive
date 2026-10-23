@@ -135,3 +135,44 @@
     @apply font-sans;
   }
 }
+
+/* 배지 위로 빛이 주기적으로 지나간다. 동작 줄이기 설정에서는 끈다. */
+@keyframes badge-shine {
+  0%,
+  60% {
+    transform: translateX(-120%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(220%) skewX(-20deg);
+  }
+}
+
+@layer components {
+  .badge-shine {
+    position: relative;
+    isolation: isolate;
+  }
+  .badge-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 40%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--primary) 40%, white),
+      transparent
+    );
+    opacity: 0.6;
+    transform: translateX(-120%) skewX(-20deg);
+    animation: badge-shine 4s ease-in-out infinite;
+    animation-delay: var(--shine-delay, 0s);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge-shine::after {
+      animation: none;
+      display: none;
+    }
+  }
+}

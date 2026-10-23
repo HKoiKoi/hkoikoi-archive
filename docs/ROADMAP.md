@@ -120,7 +120,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
 - **Task 002: 도메인 타입 및 데이터베이스 스키마 설계** ✅
   - 관련 기능: F001~F014 데이터 / 관련 파일: `lib/types/`, `lib/db/schema.ts`, `lib/schemas/`
   - PRD 데이터 모델 10종(Profile, Experience, Education, Certification, LanguageScore, Thesis, Project, Post, ContactMessage, SiteSetting)을 Drizzle `pgTable` 스키마로 정의(마이그레이션 실행은 Task 011)
-  - 목록형 필드(`skills`, `duties`, `achievements`, `keywords`, `techStack`, `tags`)는 `text[]`, `focusAreas`·`links`·`gpa`는 `jsonb` 타입 지정, `Post.status`는 `draft | published` enum, `Project.slug`·`Post.slug`는 unique
+  - 목록형 필드(`duties`, `achievements`, `keywords`, `techStack`, `tags`)는 `text[]`, `skills`(카테고리별 그룹)·`focusAreas`·`links`·`gpa`는 `jsonb` 타입 지정, `Post.status`는 `draft | published` enum, `Project.slug`·`Post.slug`는 unique
   - 화면에서 쓰는 뷰 타입(`ProjectCard`, `ProjectDetail`, `PostCard`, `PostDetail`, `HomeMetrics` 등)을 `lib/types/`에 정의해 UI와 DB를 분리
   - 연락 폼 zod 스키마 `lib/schemas/contact.ts`(이름·이메일 형식·내용 길이 제한) 정의
   - 개인정보 제외 필드(연봉, 등록번호, 퇴직사유, 고등학교)가 스키마에 없는지 검토

@@ -4,11 +4,19 @@ export interface FocusArea {
   icon: string;
 }
 
+export interface SkillGroup {
+  /** 예: 백엔드, 데이터베이스, 인프라 */
+  category: string;
+  /** 대분류 아이콘 키(focusAreas.icon과 같은 방식) */
+  icon: string;
+  items: string[];
+}
+
 export interface ProfileView {
   name: string;
   role: string;
   intro: string;
-  skills: string[];
+  skills: SkillGroup[];
   focusAreas: FocusArea[];
   githubUrl?: string;
   email?: string;

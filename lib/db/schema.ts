@@ -9,6 +9,12 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
+export type SkillGroup = {
+  category: string;
+  icon: string;
+  items: string[];
+};
+
 export type FocusArea = {
   title: string;
   description: string;
@@ -42,7 +48,7 @@ export const profiles = pgTable("profiles", {
   name: text("name").notNull(),
   role: text("role").notNull(),
   intro: text("intro").notNull(),
-  skills: text("skills").array().notNull().default([]),
+  skills: jsonb("skills").$type<SkillGroup[]>().notNull().default([]),
   focusAreas: jsonb("focus_areas").$type<FocusArea[]>().notNull().default([]),
   githubUrl: text("github_url"),
   email: text("email"),

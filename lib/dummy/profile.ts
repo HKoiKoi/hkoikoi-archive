@@ -14,14 +14,17 @@ export const dummyProfile: ProfileView = {
     "석사 과정(IT융합학과)에서는 분산 서버 환경에서 부하에 따라 락 방식을 자동 전환하는 프레임워크를 연구해 학회에서 발표했습니다. 최근에는 Claude Code로 개인 프로젝트를 만들며 PRD 작성, 작업 분해, 결과 검토까지 AI와 함께 일하는 방식을 익히고 있습니다.",
   ].join("\n\n"),
   skills: [
-    "Java",
-    "Spring Boot",
-    "MariaDB",
-    "MsSQL",
-    "AWS",
-    "Jenkins",
-    "Docker",
-    "Linux",
+    { category: "백엔드", icon: "code", items: ["Java", "Spring Boot"] },
+    {
+      category: "데이터베이스",
+      icon: "database",
+      items: ["Oracle", "MySQL", "MariaDB", "MsSQL"],
+    },
+    {
+      category: "인프라",
+      icon: "cloud",
+      items: ["AWS", "Jenkins", "Docker", "Linux"],
+    },
   ],
   focusAreas: [
     {
