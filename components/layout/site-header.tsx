@@ -4,12 +4,8 @@ import { Suspense } from "react";
 
 import { MobileNav, MobileNavTrigger } from "@/components/layout/mobile-nav";
 import { NavLink } from "@/components/layout/nav-link";
-import {
-  isFeatureEnabled,
-  navItems,
-  resumeUrl,
-  siteConfig,
-} from "@/lib/site-config";
+import { ResumeButton } from "@/components/profile/resume-button";
+import { isFeatureEnabled, navItems, siteConfig } from "@/lib/site-config";
 
 const visibleNavItems = navItems.filter((item) =>
   isFeatureEnabled(item.feature),
@@ -55,18 +51,14 @@ export function SiteHeader() {
               ))}
             </Suspense>
           </nav>
-          {resumeUrl ? (
-            <a
-              href={resumeUrl}
-              className="hidden text-sm font-medium text-primary md:inline"
-              download
-            >
-              이력서
-            </a>
-          ) : null}
+          <ResumeButton
+            variant="link"
+            size="sm"
+            className="hidden md:inline-flex"
+          />
           <div className="md:hidden">
             <Suspense fallback={<MobileNavTrigger />}>
-              <MobileNav items={visibleNavItems} resumeUrl={resumeUrl} />
+              <MobileNav items={visibleNavItems} />
             </Suspense>
           </div>
         </div>
