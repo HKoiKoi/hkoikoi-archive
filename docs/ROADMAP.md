@@ -195,7 +195,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
     - 프로필 사진(`photoUrl`)이 없어 이름 첫 글자 자리표시 원형 링으로 대체. 이력서 버튼은 `resumeUrl`이 없어 숨김(Task 008에서 `resume-button.tsx`로 통합)
     - 핵심 수치는 `"use cache"` + `cacheLife("days")`로 현재 날짜 계산을 캐시
 
-- **Task 007: 프로젝트 목록·상세 UI 및 MDX 렌더러 구축**
+- **Task 007: 프로젝트 목록·상세 UI 및 MDX 렌더러 구축** ✅ - 완료
   - 관련 기능: F003, F004(F007 공용) / 관련 파일: `app/(site)/projects/`, `components/mdx/`
   - 프로젝트 목록: 대표 프로젝트 우선 정렬, 카드(제목·한 줄 요약·기간·기술 태그)
   - 프로젝트 상세: 메타 정보(기간·역할·기술 스택·저장소·배포 링크), MDX 본문, **[목록으로]**·**[연락하기]** 버튼
@@ -204,11 +204,13 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 비공개·존재하지 않는 slug는 `notFound()` 처리(더미 기준)
   - **수락 기준**: 더미 MDX 본문(제목·목록·코드 블록·표)이 스타일과 하이라이트가 적용돼 렌더링되고, 금지 문법은 렌더링되지 않는다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → `/projects`에서 대표 프로젝트 카드 클릭 → 상세 이동, 코드 블록 하이라이트 표시
-    - [ ] 오류: 수동 확인 → 본문에 `import x from "y"` 또는 `{process.env}` 포함 더미 → 실행되지 않고 오류 또는 제거 처리
-    - [ ] 오류: 수동 확인 → 비공개 프로젝트 slug, 없는 slug 접속 → 404
-    - [ ] 엣지: 수동 확인 → 허용되지 않은 컴포넌트 `<Foo />` 포함 본문 → 페이지 전체가 깨지지 않고 오류 안내
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → `/projects`에서 대표 프로젝트 카드 클릭 → 상세 이동, 코드 블록 하이라이트 표시
+    - [x] 오류: 수동 확인 → 본문에 `import x from "y"` 또는 `{process.env}` 포함 더미 → 실행되지 않고 오류 또는 제거 처리
+    - [x] 오류: 수동 확인 → 비공개 프로젝트 slug, 없는 slug 접속 → 404
+    - [x] 엣지: 수동 확인 → 허용되지 않은 컴포넌트 `<Foo />` 포함 본문 → 페이지 전체가 깨지지 않고 오류 안내
+  - **테스트 결과**: 통과 — `next start`에서 `/projects`는 대표 우선 카드 그리드, `/projects/sample-featured-project`는 메타 헤더·`prose-mdx` 본문·목록으로·연락하기를 표시. 없는 slug는 not-found UI. 구현 중 임시 MDX 본문으로 `{1+1}` 표현식·import 제거, `<Callout>` 렌더링, `<Evil onClick>`·`<script>`는 "허용되지 않은 컴포넌트" 안내로 치환, 닫히지 않은 JSX는 본문 영역에만 `role="alert"` 오류(페이지 유지), java 코드 블록 Shiki 하이라이트와 미지원 언어 텍스트 폴백을 확인하고 원복함. 최종 더미 본문에는 코드 블록이 없어 통합 상태의 하이라이트·표 렌더링은 브라우저로 재확인하지 않았다. 브라우저 시각 확인(360px)도 하지 않았다. `npm run check && npm run build` 통과.
+    - **Shiki 서버 함수 크기**(로컬 `next build`의 `page.js.nft.json` 추적 파일 합계, 압축 전): `/projects/[slug]` 4,134,462B(약 3.94MiB, 252개 파일), `/projects` 2,246,729B(약 2.14MiB). Shiki 관련 28개 파일 857,284B(언어 9개 약 0.65MB, 테마 2개 각 약 11KB), mdx·micromark·remark 18개 약 43.7KB. `shiki/core` + JS 정규식 엔진만 사용해 Oniguruma WASM(약 652KB)은 제외. Vercel 실제 배포 크기는 측정하지 않았다.
+    - 설계 메모: Shiki가 프리렌더 중 `Date.now()`를 호출해 `MdxContent`에 `"use cache"` 적용(기본 revalidate 15분). Task 010 미리보기는 `compileMdx`를 직접 호출한다. `@shikijs/langs`·`@shikijs/themes`는 Shiki 하위 패키지로 PRD에 별도 기재가 없다. Suspense 안의 `notFound()`라 HTTP 상태는 200(404 상태가 필요하면 후속 검토). 상세 `generateMetadata`는 미작성
 
 - **Task 008: 연락 페이지 및 이력서 버튼 UI 완성**
   - 관련 기능: F008(UI), F009(UI) / 관련 파일: `app/(site)/contact/`, `components/profile/resume-button.tsx`

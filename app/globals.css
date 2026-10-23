@@ -132,6 +132,7 @@
     @apply bg-background text-foreground;
   }
   html {
+    scrollbar-gutter: stable;
     @apply font-sans;
   }
 }
@@ -175,4 +176,99 @@
       display: none;
     }
   }
+}
+
+/* MDX 본문 스타일. <MdxProse> 또는 className="prose-mdx" 래퍼 안의 HTML 요소에 적용된다. */
+@layer components {
+  .prose-mdx {
+    @apply max-w-none text-base leading-8 break-words text-foreground;
+  }
+  .prose-mdx > * + * {
+    @apply mt-5;
+  }
+  .prose-mdx h1,
+  .prose-mdx h2,
+  .prose-mdx h3,
+  .prose-mdx h4 {
+    @apply scroll-mt-24 font-heading font-bold tracking-tight text-balance;
+  }
+  .prose-mdx h1 {
+    @apply mt-12 text-3xl;
+  }
+  .prose-mdx h2 {
+    @apply mt-12 border-b pb-2 text-2xl;
+  }
+  .prose-mdx h3 {
+    @apply mt-8 text-xl;
+  }
+  .prose-mdx h4 {
+    @apply mt-6 text-lg;
+  }
+  .prose-mdx :is(h1, h2, h3, h4) + * {
+    @apply mt-4;
+  }
+  .prose-mdx a {
+    @apply font-medium text-primary underline underline-offset-4 hover:text-primary/80;
+  }
+  .prose-mdx strong {
+    @apply font-semibold;
+  }
+  .prose-mdx ul {
+    @apply list-disc pl-6;
+  }
+  .prose-mdx ol {
+    @apply list-decimal pl-6;
+  }
+  .prose-mdx li {
+    @apply pl-1 marker:text-muted-foreground;
+  }
+  .prose-mdx li + li {
+    @apply mt-2;
+  }
+  .prose-mdx li > :is(ul, ol) {
+    @apply mt-2;
+  }
+  .prose-mdx blockquote {
+    @apply border-l-4 border-primary/60 bg-muted/40 py-2 pr-4 pl-4 text-muted-foreground;
+  }
+  .prose-mdx blockquote > * + * {
+    @apply mt-3;
+  }
+  .prose-mdx hr {
+    @apply my-10 border-border;
+  }
+  .prose-mdx img {
+    @apply h-auto max-w-full rounded-lg border;
+  }
+  /* 인라인 코드 */
+  .prose-mdx :not(pre) > code {
+    @apply rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.875em] text-foreground;
+  }
+  /* 코드 블록(Shiki의 pre > code). Shiki 인라인 배경색이 있으면 그 값이 우선한다. */
+  .prose-mdx pre {
+    @apply overflow-x-auto rounded-lg border bg-card p-4 font-mono text-sm leading-7;
+  }
+  .prose-mdx pre code {
+    @apply bg-transparent p-0 text-[inherit];
+  }
+  /* 표: 좁은 화면에서는 가로 스크롤 */
+  .prose-mdx table {
+    @apply block w-full overflow-x-auto text-sm;
+  }
+  .prose-mdx thead {
+    @apply bg-muted/50;
+  }
+  .prose-mdx :is(th, td) {
+    @apply border px-3 py-2 text-left align-top;
+  }
+  .prose-mdx th {
+    @apply font-semibold;
+  }
+}
+
+/* Shiki 듀얼 테마: 사이트는 dark 고정이므로 다크 변수를 적용한다. */
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
 }
