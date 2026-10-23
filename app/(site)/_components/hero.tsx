@@ -5,7 +5,9 @@ import { resumeUrl } from "@/lib/site-config";
 import type { ProfileView } from "@/lib/types";
 
 export function Hero({ profile }: { profile: ProfileView }) {
-  const { name, role, intro, photoUrl } = profile;
+  const { name, role, photoUrl } = profile;
+  // 소개 문구의 첫 문단만 히어로에 쓴다.
+  const intro = profile.intro.split("\n\n")[0];
 
   return (
     <section className="flex flex-col-reverse items-center gap-8 py-10 md:flex-row md:justify-between md:py-16">

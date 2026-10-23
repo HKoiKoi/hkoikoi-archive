@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/layout/section";
 import { Timeline, type TimelineItem } from "@/components/profile/timeline";
 import { buttonVariants } from "@/components/ui/button";
 import { formatPeriod } from "@/lib/format";
+import { formatGpa } from "@/lib/metrics";
 import {
   getEducations,
   getExperiences,
@@ -33,9 +34,7 @@ export default async function Page() {
     title: e.school,
     subtitle: `${e.degree} · ${e.major}`,
     period: formatPeriod(e.startDate, e.endDate),
-    details: e.gpa
-      ? [`학점 ${e.gpa.score.toFixed(1)} / ${e.gpa.scale.toFixed(1)}`]
-      : [],
+    details: e.gpa ? [`학점 ${formatGpa(e.gpa)}`] : [],
   }));
 
   return (

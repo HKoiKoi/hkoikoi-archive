@@ -97,5 +97,5 @@ export function formatGpa({
   score,
   scale,
 }: NonNullable<HomeMetrics["masterGpa"]>): string {
-  return `${score.toFixed(1)} / ${scale.toFixed(1)}`;
+  return `${score} / ${scale}`;
 }
