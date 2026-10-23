@@ -19,6 +19,7 @@ function getHighlighter() {
     ],
     langs: [
       import("@shikijs/langs/java"),
+      import("@shikijs/langs/python"),
       import("@shikijs/langs/sql"),
       import("@shikijs/langs/typescript"),
       import("@shikijs/langs/tsx"),

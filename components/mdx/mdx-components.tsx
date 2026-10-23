@@ -26,7 +26,27 @@ function Callout({ children }: { children?: ReactNode }) {
   );
 }
 
+const HEX_COLOR = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
+
+/**
+ * 내부 전용: remark 플러그인이 `<span style="color: #hex">` 를 이 컴포넌트로 바꾼다.
+ * 작성자가 직접 쓸 수 없도록 lib/mdx/allowed.ts 의 허용 목록에는 넣지 않는다.
+ */
+function ColorText({
+  color,
+  children,
+}: {
+  color?: string;
+  children?: ReactNode;
+}) {
+  const safeColor = color && HEX_COLOR.test(color) ? color : undefined;
+  return (
+    <span style={safeColor ? { color: safeColor } : undefined}>{children}</span>
+  );
+}
+
 export const mdxComponents: MDXComponents = {
+  ColorText,
   Callout,
   UnsupportedComponent,
 };

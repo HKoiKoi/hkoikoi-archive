@@ -1,5 +1,8 @@
 import { evaluate } from "next-mdx-remote-client/rsc";
 import type { ReactElement } from "react";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 
 import { mdxComponents } from "@/components/mdx/mdx-components";
 import { remarkRestrictMdx } from "@/lib/mdx/remark-restrict-mdx";
@@ -21,8 +24,8 @@ export async function compileMdx(source: string): Promise<MdxResult> {
         disableExports: true,
         parseFrontmatter: false,
         mdxOptions: {
-          remarkPlugins: [remarkRestrictMdx],
-          rehypePlugins: [rehypeShiki],
+          remarkPlugins: [remarkGfm, remarkMath, remarkRestrictMdx],
+          rehypePlugins: [[rehypeKatex, { throwOnError: false }], rehypeShiki],
         },
       },
     });
