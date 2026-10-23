@@ -226,17 +226,18 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - **테스트 결과**: 통과 — dev 서버 + Playwright로 `/contact`에서 확인. 이름·이메일·내용 검증 오류(잘못된 이메일, 10자 미만)는 필드별 메시지와 함께 입력값이 유지되고, 내용에 `[mock:fail]`을 넣은 목 실패는 오류 안내 후 입력값 유지, 정상 입력은 같은 페이지(`/contact`)에서 완료 메시지 표시 후 폼 초기화. `resumeUrl`을 임시로 `/resume.pdf`로 두면 홈(히어로·헤더)·연락(헤더·본문)에 `download` 링크가 나타나고 `undefined`(원복)면 모두 사라진다. 모바일 시트 메뉴의 이력서 링크와 360px 시각 확인은 하지 않았다. `npm run check && npm run build` 통과.
     - 목 액션은 `app/(site)/contact/actions.ts`(Task 011에서 교체), 상태 타입·초기값은 `state.ts`("use server" 파일은 비동기 함수만 export 가능). Turnstile은 점선 자리표시자. `shadcn add`가 만든 `field.tsx`의 `==`는 lint 규칙에 맞춰 `===`로 수정
 
-- **Task 009: 블로그 목록·상세 UI 완성**
+- **Task 009: 블로그 목록·상세 UI 완성** ✅ - 완료
   - 관련 기능: F006, F007 / 관련 파일: `app/(site)/blog/`
   - 블로그 목록: 글 카드(제목·요약·발행일·태그), 태그 필터(`?tag=` 검색 파라미터, 요청 시점 데이터이므로 `<Suspense>` 경계 안에서 읽음), 발행 글만 대상
   - 블로그 상세: 제목·발행일·태그, Task 007 MDX 렌더러 재사용, **[목록으로]**
   - 개발 중에는 `features.blog`를 로컬에서만 켜고 확인
   - **수락 기준**: 더미 글 기준으로 태그 필터와 상세 이동이 동작하고, 임시저장 글은 목록·상세 어디에도 나오지 않는다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → `/blog`에서 태그 클릭 → URL `?tag=` 반영, 해당 태그 글만 표시
-    - [ ] 오류: 수동 확인 → 임시저장 글 slug로 `/blog/<slug>` 접속 → 404
-    - [ ] 엣지: 수동 확인 → 존재하지 않는 태그 `?tag=none` → 빈 상태 안내와 전체 보기 링크
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → `/blog`에서 태그 클릭 → URL `?tag=` 반영, 해당 태그 글만 표시
+    - [x] 오류: 수동 확인 → 임시저장 글 slug로 `/blog/<slug>` 접속 → 404
+    - [x] 엣지: 수동 확인 → 존재하지 않는 태그 `?tag=none` → 빈 상태 안내와 전체 보기 링크
+  - **테스트 결과**: 통과 — `features.blog`를 임시로 켠 `next build` + `next start`로 확인. `/blog`의 태그 링크가 `?tag=Next.js` 형태로 반영되고 해당 태그의 글(`hello-world`)만 표시된다. `/blog/draft-sample`·`/blog/nope`는 404 본문(`NEXT_HTTP_ERROR_FALLBACK;404`, noindex)이며 `generateStaticParams`에도 발행 글 2건만 포함된다. `?tag=none`은 "'none' 태그의 글이 없습니다."와 "전체 글 보기" 링크를 표시한다. 확인 후 `features.blog`는 `false`로 원복. `npm run check && npm run build` 통과.
+    - Suspense 안의 `notFound()`라 HTTP 상태는 200(Task 007과 동일). 상세 `generateMetadata`는 미작성. 360px 시각 확인은 하지 않았다. 신규: `components/post/{post-grid,tag-filter,post-detail-header,post-detail-footer}.tsx`, `getPostSlugs`
 
 - **Task 010: 관리자 화면 UI 완성**
   - 관련 기능: F010~F014(UI) / 관련 파일: `app/admin/**`, `components/admin/`
