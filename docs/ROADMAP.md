@@ -239,7 +239,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - **테스트 결과**: 통과 — `features.blog`를 임시로 켠 `next build` + `next start`로 확인. `/blog`의 태그 링크가 `?tag=Next.js` 형태로 반영되고 해당 태그의 글(`hello-world`)만 표시된다. `/blog/draft-sample`·`/blog/nope`는 404 본문(`NEXT_HTTP_ERROR_FALLBACK;404`, noindex)이며 `generateStaticParams`에도 발행 글 2건만 포함된다. `?tag=none`은 "'none' 태그의 글이 없습니다."와 "전체 글 보기" 링크를 표시한다. 확인 후 `features.blog`는 `false`로 원복. `npm run check && npm run build` 통과.
     - Suspense 안의 `notFound()`라 HTTP 상태는 200(Task 007과 동일). 상세 `generateMetadata`는 미작성. 360px 시각 확인은 하지 않았다. 신규: `components/post/{post-grid,tag-filter,post-detail-header,post-detail-footer}.tsx`, `getPostSlugs`
 
-- **Task 010: 관리자 화면 UI 완성**
+- **Task 010: 관리자 화면 UI 완성** ✅ - 완료
   - 관련 기능: F010~F014(UI) / 관련 파일: `app/admin/**`, `components/admin/`
   - 관리자 로그인: **[GitHub로 로그인]** 버튼, 실패 안내 영역(`?error=` 기준)
   - 대시보드: 글 목록(임시저장/발행 상태)·프로젝트 목록(공개/비공개, 대표)과 삭제 확인 다이얼로그, **[새 글]**·**[새 프로젝트]**, 이력서 PDF 업로드 영역, 어학 노출 토글, **[로그아웃]**
@@ -248,11 +248,13 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - react-hook-form + zod + `@hookform/resolvers` 설치, `docs/guides/forms-react-hook-form.md` 패턴 적용. shadcn `switch select dialog alert-dialog table` 추가 후 Base UI `Switch`/`Select`와 `Controller` 연결 PoC
   - **수락 기준**: 더미 데이터로 모든 관리자 화면 간 이동이 되고, 폼 클라이언트 검증 오류가 필드별로 표시된다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → 대시보드 **[새 글]** → 글 편집 이동, 본문 입력 → 미리보기 갱신(목)
-    - [ ] 오류: 수동 확인 → 제목·slug 비우고 **[발행]** → 필드별 오류 표시, 제출 안 됨
-    - [ ] 엣지: 수동 확인 → 공개·대표 `Switch` 토글 후 제출 → react-hook-form 값에 boolean으로 반영
-    - [ ] 엣지: 수동 확인 → 삭제 버튼 → 확인 다이얼로그에서 취소 시 아무 변화 없음
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → 대시보드 **[새 글]** → 글 편집 이동, 본문 입력 → 미리보기 갱신(목)
+    - [x] 오류: 수동 확인 → 제목·slug 비우고 **[발행]** → 필드별 오류 표시, 제출 안 됨
+    - [x] 엣지: 수동 확인 → 공개·대표 `Switch` 토글 후 제출 → react-hook-form 값에 boolean으로 반영
+    - [x] 엣지: 수동 확인 → 삭제 버튼 → 확인 다이얼로그에서 취소 시 아무 변화 없음
+  - **테스트 결과**: 통과 — `features.admin`을 임시로 켠 `next dev`에서 Playwright로 확인 후 `false`로 원복. 대시보드의 **[새 글]**로 `/admin/posts/new`에 이동하고, 본문 입력 후 500ms 안에 미리보기가 갱신된다(Server Action이 반환한 ReactElement가 직렬화됨). 깨진 MDX(`<div`)는 `role="alert"` 영역에 컴파일 오류를 표시한다. 제목·slug를 비우고 **[발행]**하면 제목·slug·요약에 필드별 오류가 표시되고 이동하지 않는다. 프로젝트 편집에서 공개·대표 `Switch`를 켜고 저장하면 클라이언트·서버 `z.boolean()` 검증을 모두 통과해 boolean으로 반영된다. 삭제 다이얼로그에서 **[취소]**하면 경로·스위치·입력값이 그대로다. `/admin/login?error=AccessDenied`는 안내 Alert를 표시한다. `npm run check && npm run build` 통과.
+  - **PoC 결과(Base UI × react-hook-form)**: `Switch`는 `Controller`에서 `checked={field.value}`, `onCheckedChange={(v) => field.onChange(v)}`로 연결한다(`field.onChange`를 그대로 넘기면 Base UI의 두 번째 인자 `eventDetails`가 RHF로 새므로 감싼다). 라벨은 `FieldLabel htmlFor`로 연결한다. `Select`는 이번 폼에 필드가 없어 **미검증**이다. 발행/임시저장처럼 스키마가 다른 제출 버튼은 `modeRef`로 `resolver`를 분기한다. React Compiler lint(`react-hooks/refs`) 때문에 `form.handleSubmit(...)`은 렌더 본문이 아니라 `onSubmit` 핸들러 안에서 호출한다.
+  - **후속 메모**: 저장·삭제·업로드·로그인은 목이며 Phase 3(Task 016~022)에서 실제 로직으로 교체한다. `features.admin`은 커밋 시 `false`를 유지한다.
 
 ### Phase 3: 핵심 기능 구현 (1차 공개 릴리스)
 
