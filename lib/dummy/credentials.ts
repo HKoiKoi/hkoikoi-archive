@@ -8,33 +8,34 @@ import type {
 export const dummyCertifications: CertificationView[] = [
   {
     id: "cert-1",
-    name: "TODO: 자격증명 1",
-    issuer: "TODO: 발급기관",
-    acquiredAt: "2022-06-01",
+    name: "정보처리기사",
+    issuer: "한국산업인력공단",
+    acquiredAt: "2024-03-13",
   },
   {
     id: "cert-2",
-    name: "TODO: 자격증명 2",
-    issuer: "TODO: 발급기관",
-    acquiredAt: "2021-09-01",
+    name: "SQL 개발자 (SQLD)",
+    issuer: "한국데이터산업진흥원",
+    acquiredAt: "2024-12-13",
   },
 ];
 
 export const dummyLanguageScores: LanguageScoreView[] = [
   {
     id: "lang-1",
-    exam: "TODO: 시험명",
-    score: "TODO",
-    organizer: "TODO: 주관처",
-    acquiredAt: "2020-05-01",
+    exam: "TOEIC",
+    score: "620",
+    organizer: "YBM",
+    acquiredAt: "2026-08-30",
   },
 ];
 
-/** TODO: 논문 제목·초록·키워드는 PDF를 텍스트로 받은 뒤 교체한다. */
+/** TODO: 논문 정확한 제목·초록·키워드는 PDF를 텍스트로 받은 뒤 교체한다. 현재 제목은 포트폴리오의 주제 문구다. */
 export const dummyTheses: ThesisView[] = [
   {
     id: "thesis-1",
-    title: "TODO: 학위 논문 제목",
+    title:
+      "분산 서버 환경에서 부하에 따라 동시성 제어(락) 방식을 자동 전환하는 프레임워크",
     keywords: [],
     degreeId: "edu-1",
   },

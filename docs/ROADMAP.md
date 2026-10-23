@@ -120,7 +120,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
 - **Task 002: 도메인 타입 및 데이터베이스 스키마 설계** ✅
   - 관련 기능: F001~F014 데이터 / 관련 파일: `lib/types/`, `lib/db/schema.ts`, `lib/schemas/`
   - PRD 데이터 모델 10종(Profile, Experience, Education, Certification, LanguageScore, Thesis, Project, Post, ContactMessage, SiteSetting)을 Drizzle `pgTable` 스키마로 정의(마이그레이션 실행은 Task 011)
-  - 목록형 필드(`skills`, `duties`, `achievements`, `keywords`, `techStack`, `tags`)는 `text[]`, `focusAreas`·`links`·`gpa`는 `jsonb` 타입 지정, `Post.status`는 `draft | published` enum, `Project.slug`·`Post.slug`는 unique
+  - 목록형 필드(`duties`, `achievements`, `keywords`, `techStack`, `tags`)는 `text[]`, `skills`(카테고리별 그룹)·`focusAreas`·`links`·`gpa`는 `jsonb` 타입 지정, `Post.status`는 `draft | published` enum, `Project.slug`·`Post.slug`는 unique
   - 화면에서 쓰는 뷰 타입(`ProjectCard`, `ProjectDetail`, `PostCard`, `PostDetail`, `HomeMetrics` 등)을 `lib/types/`에 정의해 UI와 DB를 분리
   - 연락 폼 zod 스키마 `lib/schemas/contact.ts`(이름·이메일 형식·내용 길이 제한) 정의
   - 개인정보 제외 필드(연봉, 등록번호, 퇴직사유, 고등학교)가 스키마에 없는지 검토
@@ -179,7 +179,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
     - [x] 엣지: 수동 확인 → 태그 0개, 아주 긴 제목 데이터 → 레이아웃 깨짐 없음(말줄임 처리)
   - **테스트 결과**: 통과 — 임시 페이지(확인 후 삭제)에서 대표·일반 프로젝트 카드, 글 카드, 경력 타임라인(재직 중 "현재" 표시)이 제목·요약·기간·태그를 표시. 비공개 프로젝트·임시저장 글은 쿼리에서 제외됨. 태그 0개 카드는 태그 영역 없이 렌더링되고, 긴 제목은 `line-clamp-2`로 말줄임 처리되며 360px에서 가로 오버플로 없음(Playwright). 더미는 TODO 자리표시자만 사용(가짜 성과·개인정보 없음). `npm run check && npm run build`
 
-- **Task 006: 홈·소개·자격 페이지 UI 완성**
+- **Task 006: 홈·소개·자격 페이지 UI 완성** ✅ - 완료
   - 관련 기능: F001, F002, F005 / 관련 파일: `app/(site)/page.tsx`, `app/(site)/about/`, `app/(site)/credentials/`, 각 `_components/`
   - 홈: 히어로(이름·직무·원형 링 프로필 사진·`< >` 장식, **[연락하기]**·**[이력서]** 버튼), 기술 스택 띠, 담당 영역 3종, 핵심 수치(경력 기간·자격증 수·석사 학점), 대표 프로젝트 카드, 최신 글 영역(`features.blog`가 꺼지면 숨김)
   - 핵심 수치 계산 함수 `lib/metrics.ts`(경력 개월 수 합산, 자격증 수, 학점 표시) 작성. 임의 수치는 쓰지 않음
@@ -187,11 +187,13 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - 자격·어학·논문: 자격증 목록, 어학 목록(`showLanguageScores`가 false면 섹션 숨김), 논문(제목·초록·키워드·링크), **[소개로 돌아가기]**
   - **수락 기준**: 세 페이지가 더미 데이터로 PRD의 모든 섹션을 표시하고, 모바일에서도 읽기 쉽다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → 홈 접속 → 히어로·기술 띠·담당 영역 3종·수치·대표 프로젝트 표시
-    - [ ] 정상: 수동 확인 → 소개 → **[자격·어학·논문 보기]** 클릭 → `/credentials` 이동
-    - [ ] 엣지: 수동 확인 → 더미 `showLanguageScores=false` → 어학 섹션 미표시
-    - [ ] 엣지: 명령 → `lib/metrics.ts`에 종료일 없는(재직 중) 경력 입력 → 현재 날짜까지 개월 수 계산
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → 홈 접속 → 히어로·기술 띠·담당 영역 3종·수치·대표 프로젝트 표시
+    - [x] 정상: 수동 확인 → 소개 → **[자격·어학·논문 보기]** 클릭 → `/credentials` 이동
+    - [x] 엣지: 수동 확인 → 더미 `showLanguageScores=false` → 어학 섹션 미표시
+    - [x] 엣지: 명령 → `lib/metrics.ts`에 종료일 없는(재직 중) 경력 입력 → 현재 날짜까지 개월 수 계산
+  - **테스트 결과**: 통과 — `next start`에서 curl로 세 페이지의 섹션 렌더링 확인(홈: 히어로·기술 띠·담당 영역 3종·경력 5년 9개월·자격증 2개·석사 학점 4.0 / 4.5·대표 프로젝트, 최신 글은 `features.blog=false`라 미표시). 소개에 경력·학력 타임라인과 `/credentials` 링크, 자격 페이지에 자격증·어학·논문·소개로 돌아가기 표시. `showLanguageScores=false`로 재빌드하면 어학 섹션이 사라지고(원복함), `calculateCareerMonths`는 재직 중 경력을 기준일까지 계산(2021-01 ~ 2026-10-23 → 69개월, 겹치는 기간은 한 번만 계산). 브라우저 시각 확인(360px 가로 오버플로)은 하지 않았다. `npm run check && npm run build` 통과.
+    - 프로필 사진(`photoUrl`)이 없어 이름 첫 글자 자리표시 원형 링으로 대체. 이력서 버튼은 `resumeUrl`이 없어 숨김(Task 008에서 `resume-button.tsx`로 통합)
+    - 핵심 수치는 `"use cache"` + `cacheLife("days")`로 현재 날짜 계산을 캐시
 
 - **Task 007: 프로젝트 목록·상세 UI 및 MDX 렌더러 구축**
   - 관련 기능: F003, F004(F007 공용) / 관련 파일: `app/(site)/projects/`, `components/mdx/`

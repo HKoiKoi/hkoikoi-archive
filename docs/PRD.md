@@ -286,7 +286,7 @@
 | id               | 고유 식별자                       |      |
 | name, role       | 이름, 직무 문구                   |      |
 | intro            | 소개 문구와 전환 스토리           |      |
-| skills           | 기술 스택 목록                    |      |
+| skills           | 기술 스택(카테고리·아이콘·항목)   |      |
 | focusAreas       | 담당 영역 3종(제목, 설명, 아이콘) |      |
 | githubUrl, email | 연락 링크                         |      |
 | photoUrl         | 프로필 사진 주소                  |      |
