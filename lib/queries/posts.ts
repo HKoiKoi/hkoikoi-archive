@@ -42,3 +42,7 @@ export async function getPostBySlug(slug: string): Promise<PostDetail | null> {
 export async function getPostTags(): Promise<string[]> {
   return [...new Set(published().flatMap((p) => p.tags))].sort();
 }
+
+export async function getPostSlugs(): Promise<string[]> {
+  return published().map((p) => p.slug);
+}
