@@ -18,7 +18,7 @@ export const dummyProfile: ProfileView = {
     {
       category: "데이터베이스",
       icon: "database",
-      items: ["Oracle", "MySQL", "MariaDB", "MsSQL"],
+      items: ["Oracle", "MySQL", "MariaDB", "MsSQL", "Redis"],
     },
     {
       category: "인프라",
