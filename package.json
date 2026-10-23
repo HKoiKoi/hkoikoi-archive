@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
+    "@hookform/resolvers": "^6.0.0",
     "@shikijs/langs": "^4.5.0",
     "@shikijs/rehype": "^4.5.0",
     "@shikijs/themes": "^4.5.0",
@@ -27,6 +28,7 @@
     "next-mdx-remote-client": "^2.1.12",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-hook-form": "^7.90.0",
     "server-only": "^0.0.1",
     "shadcn": "^4.22.1",
     "shiki": "^4.5.0",
