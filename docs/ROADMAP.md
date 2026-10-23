@@ -154,18 +154,18 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
 
 ### Phase 2: UI/UX 완성 (더미 데이터 활용)
 
-- **Task 004: 디자인 시스템 및 반응형 공통 레이아웃 완성**
+- **Task 004: 디자인 시스템 및 반응형 공통 레이아웃 완성** ✅ - 완료
   - 관련 기능: F015 / 관련 파일: `app/globals.css`, `app/layout.tsx`, `components/layout/`
   - `app/globals.css`의 `@theme inline` 토큰을 다크 네이비 배경 + 코랄(#F26B50 계열) 포인트로 재정의하고, 다크를 기본 테마로 고정(`<html className="dark">`, 라이트 전환 없음)
-  - Pretendard 적용(배포 방식 확인 후 `next/font/local` 또는 CDN 결정), Geist Mono는 코드용으로 유지
-  - 모바일 햄버거 메뉴 구현: `npx shadcn@latest add sheet`(Base UI Dialog 기반)로 추가 후 헤더에 연결
-  - 공통 섹션 컨테이너·제목 스타일, 포커스 링·색 대비(WCAG AA) 기준 점검
+  - ✅ Pretendard 적용: jsDelivr CDN의 `pretendardvariable-dynamic-subset` CSS(v1.3.9)를 `app/layout.tsx`의 `<link>`로 로드(OFL, 동적 서브셋으로 필요한 글리프만 내려받음), `--font-sans` 순환 참조 제거. Geist Mono는 코드용으로 유지
+  - ✅ 모바일 햄버거 메뉴 구현(`components/layout/mobile-nav.tsx`, features 플래그 필터 적용): `npx shadcn@latest add sheet`(Base UI Dialog 기반)로 추가 후 헤더에 연결
+  - ✅ 공통 `Container`·`Section`·`SectionHeading`(`components/layout/section.tsx`), 전역 `:focus-visible` 링 추가, 다크 토큰 대비 점검
   - **수락 기준**: 360px~1440px 폭에서 레이아웃이 깨지지 않고, 모바일에서는 햄버거 메뉴로 모든 메뉴에 접근할 수 있다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → 375px 폭에서 햄버거 버튼 클릭 → 메뉴 시트 열림, 항목 선택 시 이동 후 닫힘
-    - [ ] 엣지: 수동 확인 → 키보드 Tab/Esc로 메뉴 조작 → 포커스 이동과 닫기 동작
-    - [ ] 엣지: 수동 확인 → 1440px 폭 → 데스크톱 메뉴 표시, 햄버거 미표시
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → 375px 폭에서 햄버거 버튼 클릭 → 메뉴 시트 열림, 항목 선택 시 이동 후 닫힘
+    - [x] 엣지: 수동 확인 → 키보드 Tab/Esc로 메뉴 조작 → 포커스 이동과 닫기 동작
+    - [x] 엣지: 수동 확인 → 1440px 폭 → 데스크톱 메뉴 표시, 햄버거 미표시
+  - **테스트 결과**: 통과 — Playwright로 375px에서 햄버거 클릭 시 시트 열림, 항목 선택 시 이동 후 닫힘, Esc로 닫힘, 1440px에서 햄버거 미표시·데스크톱 메뉴 표시, 가로 오버플로 없음 확인. `npm run check && npm run build` 통과.
 
 - **Task 005: 더미 데이터 및 공통 도메인 컴포넌트 구현**
   - 관련 기능: F001~F007 / 관련 파일: `lib/dummy/`, `components/project/`, `components/post/`, `components/profile/`, `components/ui/`
