@@ -1,7 +1,7 @@
 import Link from "next/link";
 
+import { ResumeButton } from "@/components/profile/resume-button";
 import { buttonVariants } from "@/components/ui/button";
-import { resumeUrl } from "@/lib/site-config";
 import type { ProfileView } from "@/lib/types";
 
 export function Hero({ profile }: { profile: ProfileView }) {
@@ -26,15 +26,7 @@ export function Hero({ profile }: { profile: ProfileView }) {
           <Link href="/contact" className={buttonVariants({ size: "lg" })}>
             연락하기
           </Link>
-          {resumeUrl ? (
-            <a
-              href={resumeUrl}
-              download
-              className={buttonVariants({ variant: "outline", size: "lg" })}
-            >
-              이력서
-            </a>
-          ) : null}
+          <ResumeButton size="lg" />
         </div>
       </div>
       <div

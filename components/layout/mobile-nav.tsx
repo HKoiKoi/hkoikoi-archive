@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+import { ResumeButton } from "@/components/profile/resume-button";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -27,10 +28,8 @@ export function MobileNavTrigger() {
 
 export function MobileNav({
   items,
-  resumeUrl,
 }: {
   items: readonly Pick<NavItem, "label" | "href">[];
-  resumeUrl?: string;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -71,16 +70,11 @@ export function MobileNav({
               </Link>
             );
           })}
-          {resumeUrl ? (
-            <a
-              href={resumeUrl}
-              download
-              onClick={() => setOpen(false)}
-              className="rounded-md px-3 py-3 text-base font-medium text-primary transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-            >
-              이력서
-            </a>
-          ) : null}
+          <ResumeButton
+            variant="ghost"
+            onClick={() => setOpen(false)}
+            className="h-auto justify-start px-3 py-3 text-base font-medium text-primary"
+          />
         </nav>
       </SheetContent>
     </Sheet>

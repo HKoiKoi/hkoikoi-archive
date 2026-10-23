@@ -212,7 +212,7 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
     - **Shiki 서버 함수 크기**(로컬 `next build`의 `page.js.nft.json` 추적 파일 합계, 압축 전): `/projects/[slug]` 4,134,462B(약 3.94MiB, 252개 파일), `/projects` 2,246,729B(약 2.14MiB). Shiki 관련 28개 파일 857,284B(언어 9개 약 0.65MB, 테마 2개 각 약 11KB), mdx·micromark·remark 18개 약 43.7KB. `shiki/core` + JS 정규식 엔진만 사용해 Oniguruma WASM(약 652KB)은 제외. Vercel 실제 배포 크기는 측정하지 않았다.
     - 설계 메모: Shiki가 프리렌더 중 `Date.now()`를 호출해 `MdxContent`에 `"use cache"` 적용(기본 revalidate 15분). Task 010 미리보기는 `compileMdx`를 직접 호출한다. `@shikijs/langs`·`@shikijs/themes`는 Shiki 하위 패키지로 PRD에 별도 기재가 없다. Suspense 안의 `notFound()`라 HTTP 상태는 200(404 상태가 필요하면 후속 검토). 상세 `generateMetadata`는 미작성
 
-- **Task 008: 연락 페이지 및 이력서 버튼 UI 완성**
+- **Task 008: 연락 페이지 및 이력서 버튼 UI 완성** ✅ - 완료
   - 관련 기능: F008(UI), F009(UI) / 관련 파일: `app/(site)/contact/`, `components/profile/resume-button.tsx`
   - shadcn 컴포넌트 추가: `npx shadcn@latest add input textarea label field`
   - 연락 폼 UI(이름·이메일·내용, **[보내기]**, Turnstile 위젯 자리, 필드별 오류 메시지 자리, 완료 메시지 영역) 작성. 상태는 `useActionState` 패턴을 전제로 목 액션 연결
@@ -220,10 +220,11 @@ HKoiKoi.dev는 채용 담당자·면접관(방문자)과 관리자 1인(본인)�
   - `resume-button.tsx`: `download` 속성 링크, `resumeUrl`이 없으면 렌더링하지 않음. 홈 히어로·헤더 CTA·연락 페이지에서 재사용
   - **수락 기준**: 목 액션으로 성공·실패 상태가 같은 페이지에서 표시되고, 이력서 버튼은 경로가 없을 때 숨겨진다
   - **테스트 체크리스트**
-    - [ ] 정상: 수동 확인 → 목 성공 액션으로 제출 → 완료 메시지 표시, 페이지 이동 없음
-    - [ ] 오류: 수동 확인 → 목 실패 액션 → 오류 메시지 표시, 입력값 유지
-    - [ ] 엣지: 수동 확인 → `resumeUrl` 비움 → 홈·헤더·연락의 이력서 버튼 미표시
-  - **테스트 결과**: (미수행)
+    - [x] 정상: 수동 확인 → 목 성공 액션으로 제출 → 완료 메시지 표시, 페이지 이동 없음
+    - [x] 오류: 수동 확인 → 목 실패 액션 → 오류 메시지 표시, 입력값 유지
+    - [x] 엣지: 수동 확인 → `resumeUrl` 비움 → 홈·헤더·연락의 이력서 버튼 미표시
+  - **테스트 결과**: 통과 — dev 서버 + Playwright로 `/contact`에서 확인. 이름·이메일·내용 검증 오류(잘못된 이메일, 10자 미만)는 필드별 메시지와 함께 입력값이 유지되고, 내용에 `[mock:fail]`을 넣은 목 실패는 오류 안내 후 입력값 유지, 정상 입력은 같은 페이지(`/contact`)에서 완료 메시지 표시 후 폼 초기화. `resumeUrl`을 임시로 `/resume.pdf`로 두면 홈(히어로·헤더)·연락(헤더·본문)에 `download` 링크가 나타나고 `undefined`(원복)면 모두 사라진다. 모바일 시트 메뉴의 이력서 링크와 360px 시각 확인은 하지 않았다. `npm run check && npm run build` 통과.
+    - 목 액션은 `app/(site)/contact/actions.ts`(Task 011에서 교체), 상태 타입·초기값은 `state.ts`("use server" 파일은 비동기 함수만 export 가능). Turnstile은 점선 자리표시자. `shadcn add`가 만든 `field.tsx`의 `==`는 lint 규칙에 맞춰 `===`로 수정
 
 - **Task 009: 블로그 목록·상세 UI 완성**
   - 관련 기능: F006, F007 / 관련 파일: `app/(site)/blog/`
