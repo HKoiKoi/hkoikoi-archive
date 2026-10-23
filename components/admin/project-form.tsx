@@ -13,6 +13,7 @@ import {
 } from "@/app/admin/actions";
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
 import { MdxEditor } from "@/components/admin/mdx-editor";
+import { SlugInput } from "@/components/admin/slug-input";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -58,11 +59,6 @@ const textFields: {
   placeholder?: string;
 }[] = [
   { name: "title", label: "제목" },
-  {
-    name: "slug",
-    label: "slug",
-    description: "영문 소문자, 숫자, 하이픈(-)만 사용합니다.",
-  },
   { name: "period", label: "기간", placeholder: "예: 2023.03 - 2024.02" },
   { name: "role", label: "역할" },
   {
@@ -139,7 +135,28 @@ export function ProjectForm({ id, defaultValues }: ProjectFormProps) {
     <form onSubmit={onSubmit} noValidate>
       <FieldGroup>
         {renderText("title")}
-        {renderText("slug")}
+        <Controller
+          control={form.control}
+          name="slug"
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="project-slug">URL</FieldLabel>
+              <SlugInput
+                {...field}
+                id="project-slug"
+                basePath="/projects/"
+                placeholder="new-project"
+                aria-invalid={fieldState.invalid}
+              />
+              <FieldDescription>
+                영문 소문자, 숫자, 하이픈(-)만 사용합니다.
+              </FieldDescription>
+              {fieldState.error && (
+                <FieldError>{fieldState.error.message}</FieldError>
+              )}
+            </Field>
+          )}
+        />
         <Controller
           control={form.control}
           name="summary"

@@ -13,6 +13,7 @@ import {
 } from "@/app/admin/actions";
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog";
 import { MdxEditor } from "@/components/admin/mdx-editor";
+import { SlugInput } from "@/components/admin/slug-input";
 import { Button } from "@/components/ui/button";
 import {
   Field,
@@ -112,10 +113,12 @@ export function PostForm({ id, defaultValues }: PostFormProps) {
           name="slug"
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="post-slug">slug</FieldLabel>
-              <Input
+              <FieldLabel htmlFor="post-slug">URL</FieldLabel>
+              <SlugInput
                 {...field}
                 id="post-slug"
+                basePath="/blog/"
+                placeholder="new-blog"
                 aria-invalid={fieldState.invalid}
               />
               <FieldDescription>

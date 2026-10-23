@@ -3,10 +3,10 @@ import { z } from "zod";
 export const slugSchema = z
   .string()
   .trim()
-  .min(1, { error: "slug를 입력해 주세요." })
-  .max(80, { error: "slug는 80자 이하로 입력해 주세요." })
+  .min(1, { error: "URL을 입력해 주세요." })
+  .max(80, { error: "URL은 80자 이하로 입력해 주세요." })
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-    error: "slug는 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
+    error: "URL은 영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.",
   });
 
 const baseFields = {
