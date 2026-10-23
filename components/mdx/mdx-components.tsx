@@ -1,6 +1,8 @@
 import type { MDXComponents } from "mdx/types";
 import type { ReactNode } from "react";
 
+import { CodeBlock } from "@/components/mdx/code-block";
+
 /**
  * MDX 본문에서 쓸 수 있는 컴포넌트 맵 (한 파일에 고정).
  * 키는 lib/mdx/allowed.ts 의 ALLOWED_MDX_COMPONENTS 와 일치해야 한다.
@@ -45,8 +47,19 @@ function ColorText({
   );
 }
 
-export const mdxComponents: MDXComponents = {
+const baseComponents: MDXComponents = {
   ColorText,
   Callout,
   UnsupportedComponent,
 };
+
+export const mdxComponents: MDXComponents = {
+  ...baseComponents,
+  pre: CodeBlock,
+};
+
+/**
+ * 관리자 미리보기용: 클라이언트 컴포넌트(코드 복사 버튼)를 뺀 맵.
+ * Server Action 응답에는 해당 페이지 번들에 없는 클라이언트 컴포넌트를 실을 수 없다.
+ */
+export const mdxPreviewComponents: MDXComponents = baseComponents;

@@ -28,7 +28,7 @@ export async function previewMdxAction(source: string): Promise<MdxResult> {
       error: { message: "본문이 너무 길어 미리볼 수 없습니다." },
     };
   }
-  return compileMdx(source);
+  return compileMdx(source, { preview: true });
 }
 
 function invalid(error: z.ZodError): AdminActionResult {

@@ -4,7 +4,10 @@ import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 
-import { mdxComponents } from "@/components/mdx/mdx-components";
+import {
+  mdxComponents,
+  mdxPreviewComponents,
+} from "@/components/mdx/mdx-components";
 import { remarkRestrictMdx } from "@/lib/mdx/remark-restrict-mdx";
 import { rehypeShiki } from "@/lib/mdx/shiki";
 
@@ -14,11 +17,14 @@ export type MdxResult =
   | { ok: false; error: { message: string; line?: number; column?: number } };
 
 /** MDX 문자열을 서버에서 컴파일·평가한다. 구문 오류는 throw 하지 않고 오류 객체로 반환한다. */
-export async function compileMdx(source: string): Promise<MdxResult> {
+export async function compileMdx(
+  source: string,
+  { preview = false }: { preview?: boolean } = {},
+): Promise<MdxResult> {
   try {
     const { content, error } = await evaluate({
       source,
-      components: mdxComponents,
+      components: preview ? mdxPreviewComponents : mdxComponents,
       options: {
         disableImports: true,
         disableExports: true,
